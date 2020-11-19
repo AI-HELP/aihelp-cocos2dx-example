@@ -99,6 +99,24 @@ jobject getJavaUserConfig(AIHelpUserConfig userConfig) {
     return javaUserConfig;
 }
 
+jobject getJavaPushPlatform(PushPlatform platform) {
+    jint pf = 0;
+    if (platform == APNS) {
+        pf = 1;
+    } else if (platform == FIREBASE) {
+        pf = 2;
+    } else if (platform == JPUSH) {
+        pf = 3;
+    } else if (platform == GETUI) {
+        pf = 4;
+    }
+    JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
+    jclass clazz = jniEnv->FindClass("net/aihelp/config/enums/PushPlatform");
+    jmethodID fromValueId = jniEnv->GetStaticMethodID(clazz, "fromValue",
+                                                      "(I)Lnet/aihelp/config/enums/PushPlatform;");
+    return jniEnv->CallStaticObjectMethod(clazz, fromValueId, pf);
+}
+
 void AIHelpSupport::init(string appKey, string domainName, string appId) {
     const char *methodName = "init";
     const char *sig = "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
@@ -277,23 +295,16 @@ void AIHelpSupport::setUploadLogPath(string path) {
 }
 
 void AIHelpSupport::setPushTokenAndPlatform(string pushToken, PushPlatform p) {
-    jint pf = 0;
-    switch (p) {
-        case APNS:
-            pf = 1;
-            break;
-        case FIREBASE:
-            pf = 2;
-            break;
-        case JPUSH:
-            pf = 3;
-            break;
-        case GETUI:
-            pf = 4;
-            break;
+    const char *sig = "(Ljava/lang/String;Lnet/aihelp/config/enums/PushPlatform;)V";
+    const char *methodName = "setPushTokenAndPlatform";
+    cocos2d::JniMethodInfo methodInfo;
+    if (cocos2d::JniHelper::getStaticMethodInfo(methodInfo, supportClazzName, methodName, sig)) {
+        jstring jPushToken = methodInfo.env->NewStringUTF(pushToken.c_str());
+        methodInfo.env->CallStaticVoidMethod(
+                methodInfo.classID, methodInfo.methodID, jPushToken, getJavaPushPlatform(p));
+        methodInfo.env->DeleteLocalRef(jPushToken);
+        methodInfo.env->DeleteLocalRef(methodInfo.classID);
     }
-    cocos2d::JniHelper::callStaticVoidMethod(
-            supportClazzName, "setPushTokenAndPlatform", pushToken, pf);
 }
 
 bool AIHelpSupport::isAIHelpShowing() {

@@ -71,7 +71,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
             "TryElva_platform_79453658-02b7-42fb-9384-8e8712539777",
             "zh_CN");
     AIHelpSupport::setOnAIHelpInitializedCallback(AIHelp_onAIHelpInit);
-
     AIHelpSupport::setOnSpecificFormSubmittedCallback(AIHelp_onFormSubmitted);
 
     return true;

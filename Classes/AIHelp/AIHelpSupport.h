@@ -37,7 +37,7 @@ public:
     static void showOperation();
     static void showOperation(OperationConfig operationConfig);
     
-    static void updateUserInfo(AIHelpUserConfig userConfig);
+    static void updateUserInfo(AIHelpSupportUserConfig userConfig);
     static void resetUserInfo();
     
     static void updateSDKLanguage(string language);

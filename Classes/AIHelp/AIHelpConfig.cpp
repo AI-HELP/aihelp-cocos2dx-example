@@ -131,8 +131,8 @@ OperationConfig OperationConfigBuilder::build() {
 }
 
 
-/* AIHelpUserConfig */
-AIHelpUserConfig::AIHelpUserConfig(string userId, string userName, string serverId, string userTags, string customData, bool isSyncCrmInfo)
+/* AIHelpSupportUserConfig */
+AIHelpSupportUserConfig::AIHelpSupportUserConfig(string userId, string userName, string serverId, string userTags, string customData, bool isSyncCrmInfo)
     :userId(userId),
     userName(userName),
     serverId(serverId),
@@ -140,27 +140,27 @@ AIHelpUserConfig::AIHelpUserConfig(string userId, string userName, string server
     customData(customData),
     isSyncCrmInfo(isSyncCrmInfo){
 }
-string AIHelpUserConfig::getUserId() {
+string AIHelpSupportUserConfig::getUserId() {
     return userId;
 }
-string AIHelpUserConfig::getUserName() {
+string AIHelpSupportUserConfig::getUserName() {
     return userName;
 }
-string AIHelpUserConfig::getServerId() {
+string AIHelpSupportUserConfig::getServerId() {
     return serverId;
 }
-string AIHelpUserConfig::getUserTags() {
+string AIHelpSupportUserConfig::getUserTags() {
     return userTags;
 }
-string AIHelpUserConfig::getCustomData() {
+string AIHelpSupportUserConfig::getCustomData() {
     return customData;
 }
-bool AIHelpUserConfig::getIsSyncCrmInfo() {
+bool AIHelpSupportUserConfig::getIsSyncCrmInfo() {
     return isSyncCrmInfo;
 }
 
-/* AIHelpUserConfigBuilder */
-AIHelpUserConfigBuilder::AIHelpUserConfigBuilder(const AIHelpUserConfigBuilder& rBuilder){
+/* AIHelpSupportUserConfigBuilder */
+AIHelpSupportUserConfigBuilder::AIHelpSupportUserConfigBuilder(const AIHelpSupportUserConfigBuilder& rBuilder){
     this->userId = rBuilder.userId;
     this->userName = rBuilder.userName;
     this->serverId = rBuilder.serverId;
@@ -168,36 +168,36 @@ AIHelpUserConfigBuilder::AIHelpUserConfigBuilder(const AIHelpUserConfigBuilder& 
     this->customData = rBuilder.customData;
     this->isSyncCrmInfo = rBuilder.isSyncCrmInfo;
 }
-AIHelpUserConfigBuilder AIHelpUserConfigBuilder::setUserId(string userId) {
-    AIHelpUserConfigBuilder builder(*this);
+AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setUserId(string userId) {
+    AIHelpSupportUserConfigBuilder builder(*this);
     builder.userId = userId;
     return builder;
 }
-AIHelpUserConfigBuilder AIHelpUserConfigBuilder::setUserName(string userName) {
-    AIHelpUserConfigBuilder builder(*this);
+AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setUserName(string userName) {
+    AIHelpSupportUserConfigBuilder builder(*this);
     builder.userName = userName;
     return builder;
 }
-AIHelpUserConfigBuilder AIHelpUserConfigBuilder::setServerId(string serverId) {
-    AIHelpUserConfigBuilder builder(*this);
+AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setServerId(string serverId) {
+    AIHelpSupportUserConfigBuilder builder(*this);
     builder.serverId = serverId;
     return builder;
 }
-AIHelpUserConfigBuilder AIHelpUserConfigBuilder::setUserTags(string userTags) {
-    AIHelpUserConfigBuilder builder(*this);
+AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setUserTags(string userTags) {
+    AIHelpSupportUserConfigBuilder builder(*this);
     builder.userTags = userTags;
     return builder;
 }
-AIHelpUserConfigBuilder AIHelpUserConfigBuilder::setCustomData(string customData) {
-    AIHelpUserConfigBuilder builder(*this);
+AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setCustomData(string customData) {
+    AIHelpSupportUserConfigBuilder builder(*this);
     builder.customData = customData;
     return builder;
 }
-AIHelpUserConfigBuilder AIHelpUserConfigBuilder::setIsSyncCrmInfo(bool isSyncCrmInfo) {
-    AIHelpUserConfigBuilder builder(*this);
+AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setIsSyncCrmInfo(bool isSyncCrmInfo) {
+    AIHelpSupportUserConfigBuilder builder(*this);
     builder.isSyncCrmInfo = isSyncCrmInfo;
     return builder;
 }
-AIHelpUserConfig AIHelpUserConfigBuilder::build() {
-    return AIHelpUserConfig(userId, userName, serverId, userTags, customData, isSyncCrmInfo);
+AIHelpSupportUserConfig AIHelpSupportUserConfigBuilder::build() {
+    return AIHelpSupportUserConfig(userId, userName, serverId, userTags, customData, isSyncCrmInfo);
 }

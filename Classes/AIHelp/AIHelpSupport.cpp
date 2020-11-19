@@ -73,7 +73,7 @@ jobject getJavaOperationConfig(OperationConfig operationConfig) {
                                             operationConfig.getConversationConfig()));
 }
 
-jobject getJavaUserConfig(AIHelpUserConfig userConfig) {
+jobject getJavaUserConfig(AIHelpSupportUserConfig userConfig) {
     JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
     jclass clazz = jniEnv->FindClass("net/aihelp/config/UserConfig$Builder");
     jobject builderObj = jniEnv->NewObject(clazz, jniEnv->GetMethodID(clazz, "<init>", "()V"));
@@ -267,7 +267,7 @@ void AIHelpSupport::showOperation(OperationConfig operationConfig) {
     }
 }
 
-void AIHelpSupport::updateUserInfo(AIHelpUserConfig userConfig) {
+void AIHelpSupport::updateUserInfo(AIHelpSupportUserConfig userConfig) {
     const char *sig = "(Lnet/aihelp/config/UserConfig;)V";
     cocos2d::JniMethodInfo info;
     if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "updateUserInfo", sig)) {

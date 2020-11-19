@@ -106,8 +106,8 @@ public:
 };
 
 
-/* AIHelpUserConfig */
-class AIHelpUserConfig {
+/* AIHelpSupportUserConfig */
+class AIHelpSupportUserConfig {
 private:
     string userId;
     string userName;
@@ -116,7 +116,7 @@ private:
     string customData;
     bool isSyncCrmInfo;
 public:
-    AIHelpUserConfig(string userId, string userName, string serverId, string userTags, string customData, bool isSyncCrmInfo);
+    AIHelpSupportUserConfig(string userId, string userName, string serverId, string userTags, string customData, bool isSyncCrmInfo);
     string getUserId();
     string getUserName();
     string getServerId();
@@ -125,8 +125,8 @@ public:
     bool getIsSyncCrmInfo();
 };
 
-/* AIHelpUserConfigBuilder */
-class AIHelpUserConfigBuilder {
+/* AIHelpSupportUserConfigBuilder */
+class AIHelpSupportUserConfigBuilder {
 private:
     string userId;
     string userName;
@@ -135,16 +135,16 @@ private:
     string customData;
     bool isSyncCrmInfo;
 public:
-    AIHelpUserConfigBuilder(){};
-    ~AIHelpUserConfigBuilder(){};
-    AIHelpUserConfigBuilder(const AIHelpUserConfigBuilder& rBuilder);
-    AIHelpUserConfigBuilder setUserId(string userId);
-    AIHelpUserConfigBuilder setUserName(string userName);
-    AIHelpUserConfigBuilder setServerId(string serverId);
-    AIHelpUserConfigBuilder setUserTags(string userTags);
-    AIHelpUserConfigBuilder setCustomData(string customData);
-    AIHelpUserConfigBuilder setIsSyncCrmInfo(bool isSyncCrmInfo);
-    AIHelpUserConfig build();
+    AIHelpSupportUserConfigBuilder(){};
+    ~AIHelpSupportUserConfigBuilder(){};
+    AIHelpSupportUserConfigBuilder(const AIHelpSupportUserConfigBuilder& rBuilder);
+    AIHelpSupportUserConfigBuilder setUserId(string userId);
+    AIHelpSupportUserConfigBuilder setUserName(string userName);
+    AIHelpSupportUserConfigBuilder setServerId(string serverId);
+    AIHelpSupportUserConfigBuilder setUserTags(string userTags);
+    AIHelpSupportUserConfigBuilder setCustomData(string customData);
+    AIHelpSupportUserConfigBuilder setIsSyncCrmInfo(bool isSyncCrmInfo);
+    AIHelpSupportUserConfig build();
 };
 
 #endif /* AIHelpConfig_h */

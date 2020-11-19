@@ -165,12 +165,12 @@ void GameScene::showManualSupport(cocos2d::Ref *obj) {
 
 void GameScene::showAllFAQSections(cocos2d::Ref *obj) {
     ConversationConfig faqConversationConfig = ConversationConfigBuilder()
-            .setConversationIntent(BOT_SUPPORT)
+            .setConversationIntent(HUMAN_SUPPORT)
             .setAlwaysShowHumanSupportButtonInBotPage(true)
             .setWelcomeMessage("This is special configured welcome message for FAQ entrance.")
             .build();
     FAQConfig config = FAQConfigBuilder()
-            .setShowConversationMoment(ONLY_IN_ANSWER_PAGE)
+            .setShowConversationMoment(ALWAYS)
             .setConversationConfig(faqConversationConfig)
             .build();
     AIHelpSupport::showAllFAQSections(config);

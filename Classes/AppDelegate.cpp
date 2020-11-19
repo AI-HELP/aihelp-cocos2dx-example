@@ -26,6 +26,10 @@ static void AIHelp_onAIHelpInit() {
     CCLOG("AIHelp Cocos2dx Callback init complete");
 }
 
+static void AIHelp_onFormSubmitted() {
+    CCLOG("AIHelp Cocos2dx Callback onFormSubmitted");
+}
+
 bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
     auto director = Director::getInstance();
@@ -53,13 +57,22 @@ bool AppDelegate::applicationDidFinishLaunching() {
     
     // init AIHelp
     AIHelpSupport::enableLogging(true);
-    AIHelpSupport::init(
-            "THIS IS YOUR APP KEY",
-            "THIS IS YOUR APP DOMAIN",
-            "THIS IS YOUR APP ID",
-            "THIS IS YOUR DEFAULT LANGUAGE(OPTIONAL)");
+//    AIHelpSupport::init(
+//            "THIS IS YOUR APP KEY",
+//            "THIS IS YOUR APP DOMAIN",
+//            "THIS IS YOUR APP ID",
+//            "THIS IS YOUR DEFAULT LANGUAGE(OPTIONAL)");
 
+    AIHelpSupport::runAccelerationForChina();
+
+    AIHelpSupport::init(
+            "adfadf",
+            "aihelp.net",
+            "TryElva_platform_79453658-02b7-42fb-9384-8e8712539777",
+            "zh_CN");
     AIHelpSupport::setOnAIHelpInitializedCallback(AIHelp_onAIHelpInit);
+
+    AIHelpSupport::setOnSpecificFormSubmittedCallback(AIHelp_onFormSubmitted);
 
     return true;
 }

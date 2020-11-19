@@ -15,6 +15,7 @@ using namespace std;
 typedef void (*OnAIHelpInitializedCallback)(void);
 typedef void (*OnNetworkCheckResultCallback)(const char* net_log);
 typedef void (*OnMessageCountArrivedCallback)(const int unreadCount);
+typedef void (*OnSpecificFormSubmittedCallback)(void);
 
 class AIHelpSupport
 {
@@ -45,9 +46,13 @@ public:
     static string getSDKVersion();
     static bool isAIHelpShowing();
     static void enableLogging(bool enable);
+    static void showUrl(string url);
+    static void runAccelerationForChina();
+
     static void setNetworkCheckHostAddress(string address, OnNetworkCheckResultCallback callback);
     static void setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback);
     static void startUnreadMessageCountPolling(OnMessageCountArrivedCallback callback);
+    static void setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCallback callback);
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     static void setSDKInterfaceOrientationMask(int interfaceOrientationMask);   // iOS only

@@ -41,7 +41,7 @@
 
         <activity
             android:name="net.aihelp.ui.HostActivity"
-            android:theme="@style/AIHelpTheme"
+            android:theme="@style/aihelp_theme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
             android:screenOrientation="landscape"
             tools:node="replace" />

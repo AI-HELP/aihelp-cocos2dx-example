@@ -15,6 +15,7 @@
 			dependencies = (
 			);
 			name = AIHelpSDK;
+			productName = AIHelpSDK;
 		};
 /* End PBXAggregateTarget section */
 
@@ -38,7 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0B58599DC020548CDC0170C09237F214 /* Pods_TestDemo_mobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_TestDemo_mobile.framework; path = "Pods-TestDemo-mobile.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B58599DC020548CDC0170C09237F214 /* Pods_TestDemo_mobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestDemo_mobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		10F652FD19EA74D04B6E4A1F1C9FF566 /* Pods-TestDemo-mobile-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-TestDemo-mobile-dummy.m"; sourceTree = "<group>"; };
 		15E6F3A466E0A8BA24CB61D71C90DD7A /* Pods-TestDemo-desktop-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-TestDemo-desktop-acknowledgements.markdown"; sourceTree = "<group>"; };
 		16EB778F418F8B8EABFD190BCA464FB9 /* Pods-TestDemo-mobile-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-TestDemo-mobile-resources.sh"; sourceTree = "<group>"; };
@@ -48,14 +49,14 @@
 		3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		4A80FA0529F9999F96F9EC2E5994D47F /* AIHelpSupportSDK.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = AIHelpSupportSDK.bundle; path = "AIHelp-iOS-SDK/AIHelpSDK/AIHelpSupportSDK.bundle"; sourceTree = "<group>"; };
 		60C31D9614F71ECDAEA4316999ED2CCF /* Pods-TestDemo-mobile-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TestDemo-mobile-acknowledgements.plist"; sourceTree = "<group>"; };
-		68D48B3D8951B03B2D0CFEEAADE84EC2 /* Pods_TestDemo_desktop.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_TestDemo_desktop.framework; path = "Pods-TestDemo-desktop.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		68D48B3D8951B03B2D0CFEEAADE84EC2 /* Pods_TestDemo_desktop.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestDemo_desktop.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E42DD7D1A9B1773C783408275A8333F /* Pods-TestDemo-mobile-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-TestDemo-mobile-acknowledgements.markdown"; sourceTree = "<group>"; };
 		726D1924F7CD436E6F0C2E864618DC2B /* AIHelpSDK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AIHelpSDK.release.xcconfig; sourceTree = "<group>"; };
 		76CC3E5ECEB4D279A657790C5C9F7B06 /* Pods-TestDemo-desktop-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TestDemo-desktop-Info.plist"; sourceTree = "<group>"; };
 		8B34BB05FB45E1E878EAE2FD2EC4A7F5 /* AIHelpSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AIHelpSDK.debug.xcconfig; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		9DA5CFA9264475B17D29F9AE0EEF508B /* AIHelpSupportSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AIHelpSupportSDK.framework; path = "AIHelp-iOS-SDK/AIHelpSDK/AIHelpSupportSDK.framework"; sourceTree = "<group>"; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A15E92749F91F7E663EBFC7F6B9CF783 /* Pods-TestDemo-mobile-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TestDemo-mobile-Info.plist"; sourceTree = "<group>"; };
+		B1A4346525908092005F725F /* AIHelpSupportSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AIHelpSupportSDK.framework; path = "AIHelp-iOS-SDK/AIHelpSDK/AIHelpSupportSDK.framework"; sourceTree = "<group>"; };
 		B3823820949F59387B8E4096F098BD9B /* Pods-TestDemo-desktop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TestDemo-desktop.release.xcconfig"; sourceTree = "<group>"; };
 		C6CDD497219E85E6B80D579E21471345 /* Pods-TestDemo-mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TestDemo-mobile.release.xcconfig"; sourceTree = "<group>"; };
 		D43059F3288A8E115C6CEF8F38841361 /* Pods-TestDemo-desktop-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-TestDemo-desktop-dummy.m"; sourceTree = "<group>"; };
@@ -102,7 +103,6 @@
 				37E34A0913FE3F636FBFCAF00762D045 /* Resources */,
 				8ED77D95A097EB2FC2EBA71E066D718D /* Support Files */,
 			);
-			name = AIHelpSDK;
 			path = AIHelpSDK;
 			sourceTree = "<group>";
 		};
@@ -185,8 +185,8 @@
 		C19B7B04823DA55FAB4773F0EC7B4B07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				9DA5CFA9264475B17D29F9AE0EEF508B /* AIHelpSupportSDK.framework */,
 				30DC6461D4A027CCD68EB6A242D91CF9 /* MQTTFramework.framework */,
+				B1A4346525908092005F725F /* AIHelpSupportSDK.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -373,6 +373,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AIHelpSDK/AIHelp-iOS-SDK/AIHelpSDK",
+				);
 				INFOPLIST_FILE = "Target Support Files/Pods-TestDemo-desktop/Pods-TestDemo-desktop-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -407,6 +411,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AIHelpSDK",
+				);
 				INFOPLIST_FILE = "Target Support Files/Pods-TestDemo-mobile/Pods-TestDemo-mobile-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -558,8 +566,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
@@ -579,6 +586,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AIHelpSDK",
+				);
 				INFOPLIST_FILE = "Target Support Files/Pods-TestDemo-mobile/Pods-TestDemo-mobile-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -614,6 +625,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AIHelpSDK/AIHelp-iOS-SDK/AIHelpSDK",
+				);
 				INFOPLIST_FILE = "Target Support Files/Pods-TestDemo-desktop/Pods-TestDemo-desktop-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;

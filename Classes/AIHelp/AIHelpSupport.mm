@@ -12,6 +12,8 @@ static OnNetworkCheckResultCallback s_theAIhelpNetworkCheckCallBack = NULL;
 static OnAIHelpInitializedCallback s_theAIhelpInitCallBack = NULL;
 static OnMessageCountArrivedCallback s_theAIhelpUnreadMessageCallBack = NULL;
 static OnSpecificFormSubmittedCallback s_theAIhelpSpecificFormSubmittedCallback = NULL;
+static OnAIHelpSessionOpenCallback s_theAIhelpOnAIHelpSessionOpenCallback = NULL;
+static OnAIHelpSessionCloseCallback s_theAIhelpOnAIHelpSessionCloseCallback = NULL;
 
 static void AIHelp_onNetworkCheckFinish(const NSString * log) {
     if(s_theAIhelpNetworkCheckCallBack && log != nil) {
@@ -297,4 +299,14 @@ void AIHelpSupport::setSDKEdgeInsets(float top,float bottom,bool enable) {
 
 void AIHelpSupport::setSDKEdgeColor(float red,float green,float blue,float alpha) {
     [AIHelpSupportSDK setSDKEdgeColorWithRed:red green:green blue:blue alpha:alpha];
+}
+
+void AIHelpSupport::setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback callback) {
+    s_theAIhelpOnAIHelpSessionOpenCallback = callback;
+    [AIHelpSupportSDK setOnAIHelpSessionOpenCallback:callback];
+}
+
+void AIHelpSupport::setOnAIHelpSessionCloseCallback(OnAIHelpSessionCloseCallback callback) {
+    s_theAIhelpOnAIHelpSessionCloseCallback = callback;
+    [AIHelpSupportSDK setOnAIHelpSessionCloseCallback:callback];
 }

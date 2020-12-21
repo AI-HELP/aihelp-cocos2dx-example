@@ -16,6 +16,8 @@ typedef void (*OnAIHelpInitializedCallback)(void);
 typedef void (*OnNetworkCheckResultCallback)(const char* net_log);
 typedef void (*OnMessageCountArrivedCallback)(const int unreadCount);
 typedef void (*OnSpecificFormSubmittedCallback)(void);
+typedef void (*OnAIHelpSessionOpenCallback)(void);
+typedef void (*OnAIHelpSessionCloseCallback)(void);
 
 class AIHelpSupport
 {
@@ -53,6 +55,8 @@ public:
     static void setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback);
     static void startUnreadMessageCountPolling(OnMessageCountArrivedCallback callback);
     static void setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCallback callback);
+    static void setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback callback);
+    static void setOnAIHelpSessionCloseCallback(OnAIHelpSessionCloseCallback callback);
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     static void setSDKInterfaceOrientationMask(int interfaceOrientationMask);   // iOS only

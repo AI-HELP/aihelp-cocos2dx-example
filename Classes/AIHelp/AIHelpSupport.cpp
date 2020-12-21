@@ -13,6 +13,8 @@ OnAIHelpInitializedCallback initCallBack = NULL;
 OnNetworkCheckResultCallback networkCheckCallBack = NULL;
 OnMessageCountArrivedCallback unreadMsgCallback = NULL;
 OnSpecificFormSubmittedCallback formSubmittedCallback = NULL;
+OnAIHelpSessionOpenCallback sessionOpenCallback = NULL;
+OnAIHelpSessionCloseCallback sessionCloseCallback = NULL;
 
 jstring string2jstring(string str) {
     return cocos2d::JniHelper::getEnv()->NewStringUTF(str.c_str());
@@ -391,6 +393,36 @@ void AIHelpSupport::setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCa
     }
 }
 
+void AIHelpSupport::setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback callback) {
+    formSubmittedCallback = callback;
+    const char *clazzName = "net/aihelp/init/CallbackHelper";
+    const char *sig = "(I[Ljava/lang/Object;)V";
+    cocos2d::JniMethodInfo info;
+    if (cocos2d::JniHelper::getStaticMethodInfo(info, clazzName, "registerCocos2dxCallback", sig)) {
+        JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
+        jclass clazz = jniEnv->FindClass("java/lang/Object");
+        jobjectArray array = jniEnv->NewObjectArray(5, clazz, 0);
+        info.env->CallStaticVoidMethod(info.classID, info.methodID, 1005, array);
+        info.env->DeleteLocalRef(array);
+        info.env->DeleteLocalRef(info.classID);
+    }
+}
+
+void AIHelpSupport::setOnAIHelpSessionCloseCallback(OnAIHelpSessionCloseCallback callback) {
+    formSubmittedCallback = callback;
+    const char *clazzName = "net/aihelp/init/CallbackHelper";
+    const char *sig = "(I[Ljava/lang/Object;)V";
+    cocos2d::JniMethodInfo info;
+    if (cocos2d::JniHelper::getStaticMethodInfo(info, clazzName, "registerCocos2dxCallback", sig)) {
+        JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
+        jclass clazz = jniEnv->FindClass("java/lang/Object");
+        jobjectArray array = jniEnv->NewObjectArray(5, clazz, 0);
+        info.env->CallStaticVoidMethod(info.classID, info.methodID, 1006, array);
+        info.env->DeleteLocalRef(array);
+        info.env->DeleteLocalRef(info.classID);
+    }
+}
+
 extern "C" {
 JNIEXPORT void JNICALL Java_net_aihelp_init_CallbackHelper_handleCocos2dxCallback
         (JNIEnv *jniEnv, jclass clazz, jint type, jobjectArray objArray) {
@@ -398,6 +430,10 @@ JNIEXPORT void JNICALL Java_net_aihelp_init_CallbackHelper_handleCocos2dxCallbac
         initCallBack();
     } else if (type == 1004 && formSubmittedCallback) {
         formSubmittedCallback();
+    } else if (type == 1005 && sessionOpenCallback) {
+        sessionOpenCallback();
+    } else if (type == 1006 && sessionCloseCallback) {
+        sessionCloseCallback();
     } else {
         jobject element = jniEnv->GetObjectArrayElement(objArray, 0);
         if (type == 1002 && networkCheckCallBack) {

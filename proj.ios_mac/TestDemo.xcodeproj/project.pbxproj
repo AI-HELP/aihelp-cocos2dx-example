@@ -36,11 +36,13 @@
 		521A8EAA19F11F5000D177D7 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 521A8EA819F11F5000D177D7 /* fonts */; };
 		52B47A471A53D09C004E4C60 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B47A461A53D09B004E4C60 /* Security.framework */; };
 		8262943E1AAF051F00CB7CF7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8262943D1AAF051F00CB7CF7 /* Security.framework */; };
-		B104F98D2549414300514608 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B104F98C2549414300514608 /* GameController.framework */; };
-		B104F994254941EC00514608 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B104F98E2549414A00514608 /* MediaPlayer.framework */; };
 		B156FF1E2566664400F80B2E /* AIHelpConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B156FF1A2566664400F80B2E /* AIHelpConfig.cpp */; };
 		B156FF1F2566664400F80B2E /* AIHelpSupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B156FF1B2566664400F80B2E /* AIHelpSupport.cpp */; };
 		B156FF2525667F5A00F80B2E /* AIHelpSupport.mm in Sources */ = {isa = PBXBuildFile; fileRef = B156FF2425667F5A00F80B2E /* AIHelpSupport.mm */; };
+		B15A756B2668BC6C0030992A /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B15A756A2668BC6C0030992A /* MediaPlayer.framework */; };
+		B15A756D2668BC740030992A /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B15A756C2668BC740030992A /* GameController.framework */; };
+		B15A75712668BC9C0030992A /* libresolv.9.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B15A75702668BC9C0030992A /* libresolv.9.tbd */; };
+		B15A75752668BCA50030992A /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B15A75742668BCA50030992A /* libresolv.tbd */; };
 		B1E2BC662546E28800E4F9E8 /* DemoScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1E2BC5D2546E28800E4F9E8 /* DemoScene.cpp */; };
 		B1E2BC6A2546E28800E4F9E8 /* AppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1E2BC652546E28800E4F9E8 /* AppDelegate.cpp */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
@@ -136,6 +138,10 @@
 		B156FF1C2566664400F80B2E /* AIHelpSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AIHelpSupport.h; path = ../../../Classes/AIHelp/AIHelpSupport.h; sourceTree = "<group>"; };
 		B156FF1D2566664400F80B2E /* AIHelpConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AIHelpConfig.h; path = ../../../Classes/AIHelp/AIHelpConfig.h; sourceTree = "<group>"; };
 		B156FF2425667F5A00F80B2E /* AIHelpSupport.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AIHelpSupport.mm; path = ../../../Classes/AIHelp/AIHelpSupport.mm; sourceTree = "<group>"; };
+		B15A756A2668BC6C0030992A /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.2.sdk/System/Library/Frameworks/MediaPlayer.framework; sourceTree = DEVELOPER_DIR; };
+		B15A756C2668BC740030992A /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.2.sdk/System/Library/Frameworks/GameController.framework; sourceTree = DEVELOPER_DIR; };
+		B15A75702668BC9C0030992A /* libresolv.9.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.9.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.2.sdk/usr/lib/libresolv.9.tbd; sourceTree = DEVELOPER_DIR; };
+		B15A75742668BCA50030992A /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.2.sdk/usr/lib/libresolv.tbd; sourceTree = DEVELOPER_DIR; };
 		B1E2BC5C2546E28800E4F9E8 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B1E2BC5D2546E28800E4F9E8 /* DemoScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DemoScene.cpp; sourceTree = "<group>"; };
 		B1E2BC642546E28800E4F9E8 /* DemoScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoScene.h; sourceTree = "<group>"; };
@@ -158,8 +164,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B104F994254941EC00514608 /* MediaPlayer.framework in Frameworks */,
-				B104F98D2549414300514608 /* GameController.framework in Frameworks */,
+				B15A75752668BCA50030992A /* libresolv.tbd in Frameworks */,
+				B15A75712668BC9C0030992A /* libresolv.9.tbd in Frameworks */,
+				B15A756D2668BC740030992A /* GameController.framework in Frameworks */,
+				B15A756B2668BC6C0030992A /* MediaPlayer.framework in Frameworks */,
 				294D0D641D0D56D500F7F5D4 /* CoreText.framework in Frameworks */,
 				ED545A7C1B68A1F400C3958E /* libiconv.dylib in Frameworks */,
 				52B47A471A53D09C004E4C60 /* Security.framework in Frameworks */,
@@ -255,7 +263,11 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B15A75742668BCA50030992A /* libresolv.tbd */,
+				B15A75702668BC9C0030992A /* libresolv.9.tbd */,
+				B15A756C2668BC740030992A /* GameController.framework */,
 				B104F98E2549414A00514608 /* MediaPlayer.framework */,
+				B15A756A2668BC6C0030992A /* MediaPlayer.framework */,
 				B104F98C2549414300514608 /* GameController.framework */,
 				294D0D631D0D56D500F7F5D4 /* CoreText.framework */,
 				ED545A7D1B68A1FA00C3958E /* libiconv.dylib */,
@@ -488,7 +500,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TestDemo-mobile/Pods-TestDemo-mobile-resources.sh",
-				"${PODS_ROOT}/AIHelpSDK/AIHelp-iOS-SDK/AIHelpSDK/AIHelpSupportSDK.bundle",
+				"${PODS_ROOT}/AIHelpSDK/AIHelpSDK/AIHelpSupportSDK.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (

@@ -54,10 +54,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // init AIHelp
     AIHelpSupport::enableLogging(true);
     AIHelpSupport::init(
-            "THIS IS YOUR APP KEY",
-            "THIS IS YOUR APP DOMAIN",
-            "THIS IS YOUR APP ID",
-            "THIS IS YOUR DEFAULT LANGUAGE(OPTIONAL)");
+            "TryElva_platform_09ebf7fa-8d45-4843-bd59-cfda3d8a8dc0",
+            "a.aihelp.net",
+            "TryElva_platform_09ebf7fa-8d45-4843-bd59-cfda3d8a8dc0");
     AIHelpSupport::setOnAIHelpInitializedCallback(AIHelp_onAIHelpInit);
 
     return true;

@@ -1,5 +1,7 @@
 #include "DemoScene.h"
 #include "AIHelp/AIHelpSupport.h"
+#include "AIHelp/AIHelpConfig.h"
+#include "../proj.ios_mac/Pods/AIHelpSDK/AIHelpSDK/AIHelpSupportSDK.framework/Headers/AIHelpSDKConfig.h"
 
 USING_NS_CC;
 
@@ -164,16 +166,28 @@ void GameScene::showManualSupport(cocos2d::Ref *obj) {
 }
 
 void GameScene::showAllFAQSections(cocos2d::Ref *obj) {
-    ConversationConfig faqConversationConfig = ConversationConfigBuilder()
-            .setConversationIntent(HUMAN_SUPPORT)
+//    ConversationConfig faqConversationConfig = ConversationConfigBuilder()
+//            .setConversationIntent(HUMAN_SUPPORT)
+//            .setAlwaysShowHumanSupportButtonInBotPage(true)
+//            .setWelcomeMessage("This is special configured welcome message for FAQ entrance.")
+//            .build();
+//    FAQConfig config = FAQConfigBuilder()
+//            .setShowConversationMoment(ALWAYS)
+//            .setConversationConfig(faqConversationConfig)
+//            .build();
+//    AIHelpSupport::showAllFAQSections(config);
+
+    ConversationConfigBuilder conversationConfigBuilder = ConversationConfigBuilder()
             .setAlwaysShowHumanSupportButtonInBotPage(true)
-            .setWelcomeMessage("This is special configured welcome message for FAQ entrance.")
-            .build();
-    FAQConfig config = FAQConfigBuilder()
-            .setShowConversationMoment(ALWAYS)
-            .setConversationConfig(faqConversationConfig)
-            .build();
-    AIHelpSupport::showAllFAQSections(config);
+            .setConversationIntent(ConversationIntent::BOT_SUPPORT)
+            .setWelcomeMessage("What can I do for you");
+
+    FAQConfigBuilder faqBuilder = FAQConfigBuilder()
+            .setShowConversationMoment(ConversationMoment::ALWAYS)
+            .setConversationConfig(conversationConfigBuilder.build());
+
+    AIHelpSupport::showAllFAQSections(faqBuilder.build());
+
 }
 
 void GameScene::showSingleSection(cocos2d::Ref *obj) {
@@ -219,7 +233,7 @@ void GameScene::showOperation(cocos2d::Ref *obj) {
 // ================================= Configuration =================================
 
 void GameScene::updateUserInfo(cocos2d::Ref *obj) {
-    AIHelpUserConfig userConfig = AIHelpUserConfigBuilder()
+    AIHelpSupportUserConfig userConfig = AIHelpSupportUserConfigBuilder()
             .setUserId("UID")
             .setServerId("SERVER ID")
             .setUserName("USER NAME")

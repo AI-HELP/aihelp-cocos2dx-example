@@ -119,6 +119,20 @@ jobject getJavaPushPlatform(PushPlatform platform) {
     return jniEnv->CallStaticObjectMethod(clazz, fromValueId, pf);
 }
 
+jobject getJavaPublishCountryOrRegion(PublishCountryOrRegion countryOrRegion){
+    jint jCountryOrRegion = -1;
+    if (countryOrRegion == CN) {
+        jCountryOrRegion = 1;
+    } else if (countryOrRegion == IN) {
+        jCountryOrRegion = 2;
+    }
+    JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
+    jclass clazz = jniEnv->FindClass("net/aihelp/config/enums/PublishCountryOrRegion");
+    jmethodID fromValueId = jniEnv->GetStaticMethodID(clazz, "fromValue",
+                                                      "(I)Lnet/aihelp/config/enums/PublishCountryOrRegion;");
+    return jniEnv->CallStaticObjectMethod(clazz, fromValueId, jCountryOrRegion);
+}
+
 void AIHelpSupport::init(string appKey, string domainName, string appId) {
     const char *methodName = "init";
     const char *sig = "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
@@ -302,9 +316,11 @@ void AIHelpSupport::setPushTokenAndPlatform(string pushToken, PushPlatform p) {
     cocos2d::JniMethodInfo methodInfo;
     if (cocos2d::JniHelper::getStaticMethodInfo(methodInfo, supportClazzName, methodName, sig)) {
         jstring jPushToken = methodInfo.env->NewStringUTF(pushToken.c_str());
+        jobject jPushPlatform = getJavaPushPlatform(p);
         methodInfo.env->CallStaticVoidMethod(
-                methodInfo.classID, methodInfo.methodID, jPushToken, getJavaPushPlatform(p));
+                methodInfo.classID, methodInfo.methodID, jPushToken, jPushPlatform);
         methodInfo.env->DeleteLocalRef(jPushToken);
+        methodInfo.env->DeleteLocalRef(jPushPlatform);
         methodInfo.env->DeleteLocalRef(methodInfo.classID);
     }
 }
@@ -317,16 +333,25 @@ void AIHelpSupport::enableLogging(bool enable) {
     cocos2d::JniHelper::callStaticVoidMethod(supportClazzName, "enableLogging", enable);
 }
 
+void AIHelpSupport::additionalSupportFor(PublishCountryOrRegion countryOrRegion){
+    const char *sig = "(Lnet/aihelp/config/enums/PublishCountryOrRegion;)V";
+    const char *methodName = "additionalSupportFor";
+    cocos2d::JniMethodInfo methodInfo;
+    if (cocos2d::JniHelper::getStaticMethodInfo(methodInfo, supportClazzName, methodName, sig)) {
+        jobject jCountryOrRegion = getJavaPublishCountryOrRegion(countryOrRegion);
+        methodInfo.env->CallStaticVoidMethod(
+                methodInfo.classID, methodInfo.methodID, jCountryOrRegion);
+        methodInfo.env->DeleteLocalRef(jCountryOrRegion);
+        methodInfo.env->DeleteLocalRef(methodInfo.classID);
+    }
+}
+
 string AIHelpSupport::getSDKVersion() {
     return cocos2d::JniHelper::callStaticStringMethod(supportClazzName, "getSDKVersion");
 }
 
 void AIHelpSupport::showUrl(string url) {
     cocos2d::JniHelper::callStaticVoidMethod(supportClazzName, "showUrl", url);
-}
-
-void AIHelpSupport::runAccelerationForChina() {
-    cocos2d::JniHelper::callStaticVoidMethod(supportClazzName, "runAccelerationForChina");
 }
 
 void AIHelpSupport::setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback) {

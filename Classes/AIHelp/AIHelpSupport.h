@@ -49,7 +49,7 @@ public:
     static bool isAIHelpShowing();
     static void enableLogging(bool enable);
     static void showUrl(string url);
-    static void runAccelerationForChina();
+    static void additionalSupportFor(PublishCountryOrRegion countryOrRegion);
 
     static void setNetworkCheckHostAddress(string address, OnNetworkCheckResultCallback callback);
     static void setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback);

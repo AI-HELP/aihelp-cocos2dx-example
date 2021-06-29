@@ -260,8 +260,12 @@ void AIHelpSupport::showUrl(string url) {
     [AIHelpSupportSDK showUrl:urlStr];
 }
 
-void AIHelpSupport::runAccelerationForChina() {
-    [AIHelpSupportSDK runAccelerationForChina];
+void AIHelpSupport::additionalSupportFor(PublishCountryOrRegion countryOrRegion) {
+    AIHelpPublishCountryOrRegion tmpCountryOrRegion = AIHelpCN;
+    if(countryOrRegion == IN) {
+        tmpCountryOrRegion = AIHelpIN;
+    }
+    [AIHelpSupportSDK additionalSupportFor:tmpCountryOrRegion];
 }
 
 void AIHelpSupport::setSDKInterfaceOrientationMask(int interfaceOrientationMask) {

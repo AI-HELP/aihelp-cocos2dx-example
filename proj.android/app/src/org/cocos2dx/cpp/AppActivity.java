@@ -32,7 +32,7 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 
 import org.cocos2dx.lib.Cocos2dxActivity;
-import org.cocos2dx.lib.ShotScreenByGL10;
+
 
 import android.os.Build;
 import android.os.Handler;

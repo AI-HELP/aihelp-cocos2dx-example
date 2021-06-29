@@ -50,7 +50,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // run
     director->runWithScene(scene);
-    
+    AIHelpSupport::additionalSupportFor(IN);
     // init AIHelp
     AIHelpSupport::enableLogging(true);
     AIHelpSupport::init(

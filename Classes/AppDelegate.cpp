@@ -63,11 +63,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 //            "THIS IS YOUR APP ID",
 //            "THIS IS YOUR DEFAULT LANGUAGE(OPTIONAL)");
 
-    AIHelpSupport::runAccelerationForChina();
-
+    AIHelpSupport::additionalSupportFor(PublishCountryOrRegion::IN);
     AIHelpSupport::init(
             "adfadf",
-            "aihelp.net",
+            "a.aihelp.net",
             "TryElva_platform_79453658-02b7-42fb-9384-8e8712539777",
             "zh_CN");
     AIHelpSupport::setOnAIHelpInitializedCallback(AIHelp_onAIHelpInit);

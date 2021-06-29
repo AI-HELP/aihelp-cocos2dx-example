@@ -26,6 +26,12 @@ typedef NS_ENUM(int,AIHelpFAQShowConversationMoment) {             /* Conversati
     AIHelpFAQShowConversationMomentOnlyInAnswerPage = 4,           // only in answer page show
 };
 
+typedef NS_ENUM(int,AIHelpPublishCountryOrRegion) {
+    AIHelpCN = 1,
+    AIHelpIN
+};
+
+
 
 #pragma mark - ECServiceUserConfig
 

@@ -239,8 +239,12 @@ typedef void (*AISupportCloseSDKCallBack)(void);
  */
 + (void)setSDKAppearanceMode:(int)mode;
 
-
-+ (void)runAccelerationForChina;
+/**
+ * AIHelp provide additional support for some country or regions.
+ *
+ * @param countryOrRegion ISO country code, please check https://www.iso.org/obp/ui/#search to learn more.
+ */
++ (void)additionalSupportFor:(AIHelpPublishCountryOrRegion)countryOrRegion;
 
 
 + (void)showUrl:(NSString *)url;

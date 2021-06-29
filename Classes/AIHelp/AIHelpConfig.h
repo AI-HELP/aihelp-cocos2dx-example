@@ -14,7 +14,7 @@ using namespace std;
 enum ConversationIntent {BOT_SUPPORT, HUMAN_SUPPORT};
 enum ConversationMoment {NEVER, ALWAYS, ONLY_IN_ANSWER_PAGE, AFTER_MARKING_UNHELPFUL};
 enum PushPlatform {APNS, FIREBASE, JPUSH, GETUI};
-
+enum PublishCountryOrRegion {CN = 1, IN = 2};
 /* ConversationConfig */
 class ConversationConfig {
 private:

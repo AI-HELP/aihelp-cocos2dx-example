@@ -35,24 +35,20 @@ ConversationConfigBuilder::ConversationConfigBuilder(const ConversationConfigBui
     this->conversationIntent = rBuilder.conversationIntent;
 }
 ConversationConfigBuilder ConversationConfigBuilder::setAlwaysShowHumanSupportButtonInBotPage(bool alwaysShowHumanSupportButtonInBotPage) {
-    ConversationConfigBuilder builder(*this);
-    builder.alwaysShowHumanSupportButtonInBotPage = alwaysShowHumanSupportButtonInBotPage;
-    return builder;
+    (*this).alwaysShowHumanSupportButtonInBotPage = alwaysShowHumanSupportButtonInBotPage;
+    return (*this);
 }
 ConversationConfigBuilder ConversationConfigBuilder::setWelcomeMessage(string welcomeMessage) {
-    ConversationConfigBuilder builder(*this);
-    builder.welcomeMessage = welcomeMessage;
-    return builder;
+    (*this).welcomeMessage = welcomeMessage;
+    return (*this);
 }
 ConversationConfigBuilder ConversationConfigBuilder::setStoryNode(string storyNode) {
-    ConversationConfigBuilder builder(*this);
-    builder.storyNode = storyNode;
-    return builder;
+    (*this).storyNode = storyNode;
+    return (*this);
 }
 ConversationConfigBuilder ConversationConfigBuilder::setConversationIntent(ConversationIntent conversationIntent) {
-    ConversationConfigBuilder builder(*this);
-    builder.conversationIntent = conversationIntent;
-    return builder;
+    (*this).conversationIntent = conversationIntent;
+    return (*this);
 }
 ConversationConfig ConversationConfigBuilder::build() {
     return ConversationConfig(alwaysShowHumanSupportButtonInBotPage, welcomeMessage, storyNode, conversationIntent);
@@ -76,14 +72,12 @@ FAQConfigBuilder::FAQConfigBuilder(const FAQConfigBuilder& rBuilder){
     this->conversationConfig = rBuilder.conversationConfig;
 }
 FAQConfigBuilder FAQConfigBuilder::setShowConversationMoment(ConversationMoment showConversationMoment) {
-    FAQConfigBuilder builder(*this);
-    builder.showConversationMoment = showConversationMoment;
-    return builder;
+    (*this).showConversationMoment = showConversationMoment;
+    return (*this);
 }
 FAQConfigBuilder FAQConfigBuilder::setConversationConfig(const ConversationConfig& conversationConfig) {
-    FAQConfigBuilder builder(*this);
-    builder.conversationConfig = conversationConfig;
-    return builder;
+    (*this).conversationConfig = conversationConfig;
+    return (*this);
 }
 FAQConfig FAQConfigBuilder::build() {
     return FAQConfig(showConversationMoment, conversationConfig);
@@ -112,19 +106,16 @@ OperationConfigBuilder::OperationConfigBuilder(const OperationConfigBuilder& rBu
     this->conversationConfig = rBuilder.conversationConfig;
 }
 OperationConfigBuilder OperationConfigBuilder::setSelectIndex(int selectIndex) {
-    OperationConfigBuilder builder(*this);
-    builder.selectIndex = selectIndex;
-    return builder;
+    (*this).selectIndex = selectIndex;
+    return (*this);
 }
 OperationConfigBuilder OperationConfigBuilder::setConversationTitle(string conversationBotTitle) {
-    OperationConfigBuilder builder(*this);
-    builder.conversationTitle = conversationBotTitle;
-    return builder;
+    (*this).conversationTitle = conversationBotTitle;
+    return (*this);
 }
 OperationConfigBuilder OperationConfigBuilder::setConversationConfig(const ConversationConfig& conversationConfig) {
-    OperationConfigBuilder builder(*this);
-    builder.conversationConfig = conversationConfig;
-    return builder;
+    (*this).conversationConfig = conversationConfig;
+    return (*this);
 }
 OperationConfig OperationConfigBuilder::build() {
     return OperationConfig(selectIndex, conversationTitle, conversationConfig);
@@ -169,34 +160,28 @@ AIHelpSupportUserConfigBuilder::AIHelpSupportUserConfigBuilder(const AIHelpSuppo
     this->isSyncCrmInfo = rBuilder.isSyncCrmInfo;
 }
 AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setUserId(string userId) {
-    AIHelpSupportUserConfigBuilder builder(*this);
-    builder.userId = userId;
-    return builder;
+    (*this).userId = userId;
+    return (*this);
 }
 AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setUserName(string userName) {
-    AIHelpSupportUserConfigBuilder builder(*this);
-    builder.userName = userName;
-    return builder;
+    (*this).userName = userName;
+    return (*this);
 }
 AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setServerId(string serverId) {
-    AIHelpSupportUserConfigBuilder builder(*this);
-    builder.serverId = serverId;
-    return builder;
+    (*this).serverId = serverId;
+    return (*this);
 }
 AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setUserTags(string userTags) {
-    AIHelpSupportUserConfigBuilder builder(*this);
-    builder.userTags = userTags;
-    return builder;
+    (*this).userTags = userTags;
+    return (*this);
 }
 AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setCustomData(string customData) {
-    AIHelpSupportUserConfigBuilder builder(*this);
-    builder.customData = customData;
-    return builder;
+    (*this).customData = customData;
+    return (*this);
 }
 AIHelpSupportUserConfigBuilder AIHelpSupportUserConfigBuilder::setIsSyncCrmInfo(bool isSyncCrmInfo) {
-    AIHelpSupportUserConfigBuilder builder(*this);
-    builder.isSyncCrmInfo = isSyncCrmInfo;
-    return builder;
+    (*this).isSyncCrmInfo = isSyncCrmInfo;
+    return (*this);
 }
 AIHelpSupportUserConfig AIHelpSupportUserConfigBuilder::build() {
     return AIHelpSupportUserConfig(userId, userName, serverId, userTags, customData, isSyncCrmInfo);

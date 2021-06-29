@@ -159,35 +159,22 @@ void GameScene::showBotSupport(cocos2d::Ref *obj) {
 void GameScene::showManualSupport(cocos2d::Ref *obj) {
     ConversationConfig config = ConversationConfigBuilder()
             .setConversationIntent(HUMAN_SUPPORT)
-            .setWelcomeMessage(
-                    "You can configure special welcome message for your end users at here.")
+            .setWelcomeMessage("You can configure special welcome message for your end users at here.")
             .build();
     AIHelpSupport::showConversation(config);
 }
 
 void GameScene::showAllFAQSections(cocos2d::Ref *obj) {
-//    ConversationConfig faqConversationConfig = ConversationConfigBuilder()
-//            .setConversationIntent(HUMAN_SUPPORT)
-//            .setAlwaysShowHumanSupportButtonInBotPage(true)
-//            .setWelcomeMessage("This is special configured welcome message for FAQ entrance.")
-//            .build();
-//    FAQConfig config = FAQConfigBuilder()
-//            .setShowConversationMoment(ALWAYS)
-//            .setConversationConfig(faqConversationConfig)
-//            .build();
-//    AIHelpSupport::showAllFAQSections(config);
+    ConversationConfigBuilder conversationConfigBuilder = ConversationConfigBuilder();
+    conversationConfigBuilder.setAlwaysShowHumanSupportButtonInBotPage(true);
+    conversationConfigBuilder.setConversationIntent(ConversationIntent::BOT_SUPPORT);
+    conversationConfigBuilder.setWelcomeMessage("What can I do for you");
 
-    ConversationConfigBuilder conversationConfigBuilder = ConversationConfigBuilder()
-            .setAlwaysShowHumanSupportButtonInBotPage(true)
-            .setConversationIntent(ConversationIntent::BOT_SUPPORT)
-            .setWelcomeMessage("What can I do for you");
-
-    FAQConfigBuilder faqBuilder = FAQConfigBuilder()
-            .setShowConversationMoment(ConversationMoment::ALWAYS)
-            .setConversationConfig(conversationConfigBuilder.build());
+    FAQConfigBuilder faqBuilder = FAQConfigBuilder();
+    faqBuilder.setShowConversationMoment(ConversationMoment::ALWAYS);
+    faqBuilder.setConversationConfig(conversationConfigBuilder.build());
 
     AIHelpSupport::showAllFAQSections(faqBuilder.build());
-
 }
 
 void GameScene::showSingleSection(cocos2d::Ref *obj) {

@@ -26,6 +26,15 @@ static void AIHelp_onAIHelpInit() {
     CCLOG("AIHelp Cocos2dx Callback init complete");
 }
 
+static void AIHelp_onOperationUnreadChanged(bool hasUnreadArticles) {
+    if (hasUnreadArticles) {
+        CCLOG("AIHelp Cocos2dx Callback has unread articles");
+    } else {
+        CCLOG("AIHelp Cocos2dx Callback no unread articles");
+    }
+
+}
+
 bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
     auto director = Director::getInstance();
@@ -54,11 +63,12 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // init AIHelp
     AIHelpSupport::enableLogging(true);
     AIHelpSupport::init(
-            "TryElva_platform_09ebf7fa-8d45-4843-bd59-cfda3d8a8dc0",
-            "a.aihelp.net",
-            "TryElva_platform_09ebf7fa-8d45-4843-bd59-cfda3d8a8dc0");
+            "this is appKey",
+            "this is domain",
+            "this is appId");
     AIHelpSupport::setOnAIHelpInitializedCallback(AIHelp_onAIHelpInit);
-
+    AIHelpSupport::setOnAIHelpOperationUnreadChangedCallback(AIHelp_onOperationUnreadChanged);
+    
     return true;
 }
 

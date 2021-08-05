@@ -30,6 +30,15 @@ static void AIHelp_onFormSubmitted() {
     CCLOG("AIHelp Cocos2dx Callback onFormSubmitted");
 }
 
+static void AIHelp_onOperationUnreadChanged(bool hasUnreadArticles) {
+    if (hasUnreadArticles) {
+        CCLOG("AIHelp Cocos2dx Callback has unread articles");
+    } else {
+        CCLOG("AIHelp Cocos2dx Callback no unread articles");
+    }
+
+}
+
 bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
     auto director = Director::getInstance();
@@ -71,6 +80,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
             "zh_CN");
     AIHelpSupport::setOnAIHelpInitializedCallback(AIHelp_onAIHelpInit);
     AIHelpSupport::setOnSpecificFormSubmittedCallback(AIHelp_onFormSubmitted);
+    AIHelpSupport::setOnAIHelpOperationUnreadChangedCallback(AIHelp_onOperationUnreadChanged);
 
     return true;
 }

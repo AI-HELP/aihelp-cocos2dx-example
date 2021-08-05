@@ -13,7 +13,7 @@ cocos2d::Scene *GameScene::createScene() {
 bool GameScene::init() {
     if (!Layer::init())
         return false;
-
+    
 //	auto BGColor = LayerColor::create(Color4B(211, 211, 211, 255));
 //	this->addChild(BGColor);
 
@@ -130,6 +130,8 @@ bool GameScene::init() {
                                                 CC_CALLBACK_1(GameScene::getSDKVersion, this));
     menuItemVersion->setPosition(Vec2(750, 100));
     menuItemVersion->setColor(Color3B(51, 51, 51));
+    
+    
 
     // ================================= Configuration =================================
 

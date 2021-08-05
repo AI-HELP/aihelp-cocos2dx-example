@@ -1,7 +1,6 @@
 #include "DemoScene.h"
 #include "AIHelp/AIHelpSupport.h"
 #include "AIHelp/AIHelpConfig.h"
-#include "../proj.ios_mac/Pods/AIHelpSDK/AIHelpSDK/AIHelpSupportSDK.framework/Headers/AIHelpSDKConfig.h"
 
 USING_NS_CC;
 

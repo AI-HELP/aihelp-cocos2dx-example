@@ -3,6 +3,8 @@
 //  AIHelp Cocos2dx iOS SDK
 //
 //
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+
 #import "AIHelpSupport.h"
 #import <AIHelpSupportSDK/AIHelpSupportSDK.h>
 
@@ -14,6 +16,7 @@ static OnMessageCountArrivedCallback s_theAIhelpUnreadMessageCallBack = NULL;
 static OnSpecificFormSubmittedCallback s_theAIhelpSpecificFormSubmittedCallback = NULL;
 static OnAIHelpSessionOpenCallback s_theAIhelpOnAIHelpSessionOpenCallback = NULL;
 static OnAIHelpSessionCloseCallback s_theAIhelpOnAIHelpSessionCloseCallback = NULL;
+static OnAIHelpOperationUnreadCallback s_theAIHelpOperationUnreadCallback = NULL;
 
 static void AIHelp_onNetworkCheckFinish(const NSString * log) {
     if(s_theAIhelpNetworkCheckCallBack && log != nil) {
@@ -41,6 +44,12 @@ static NSString* AIHelpParseCString(const char *cstring) {
                                                    length:strlen(cstring)
                                                  encoding:NSUTF8StringEncoding];
     return nsstring;
+}
+
+static void AIHelp_onAIHelpOperationUnreadMessage(const bool hasUnread) {
+    if(s_theAIHelpOperationUnreadCallback) {
+        s_theAIHelpOperationUnreadCallback(hasUnread);
+    }
 }
 
 #pragma mark - Interface implementation
@@ -314,3 +323,12 @@ void AIHelpSupport::setOnAIHelpSessionCloseCallback(OnAIHelpSessionCloseCallback
     s_theAIhelpOnAIHelpSessionCloseCallback = callback;
     [AIHelpSupportSDK setOnAIHelpSessionCloseCallback:callback];
 }
+
+void AIHelpSupport::setOnAIHelpOperationUnreadChangedCallback(OnAIHelpOperationUnreadCallback callback)
+{
+    s_theAIHelpOperationUnreadCallback = callback;
+    [AIHelpSupportSDK setOnOperationUnreadChangedCallback:callback];
+}
+
+
+#endif

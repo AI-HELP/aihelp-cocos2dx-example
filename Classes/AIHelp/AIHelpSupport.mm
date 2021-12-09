@@ -11,28 +11,10 @@
 #pragma mark Utility methods.
 
 static OnNetworkCheckResultCallback s_theAIhelpNetworkCheckCallBack = NULL;
-static OnAIHelpInitializedCallback s_theAIhelpInitCallBack = NULL;
-static OnMessageCountArrivedCallback s_theAIhelpUnreadMessageCallBack = NULL;
-static OnSpecificFormSubmittedCallback s_theAIhelpSpecificFormSubmittedCallback = NULL;
-static OnAIHelpSessionOpenCallback s_theAIhelpOnAIHelpSessionOpenCallback = NULL;
-static OnAIHelpSessionCloseCallback s_theAIhelpOnAIHelpSessionCloseCallback = NULL;
-static OnAIHelpOperationUnreadCallback s_theAIHelpOperationUnreadCallback = NULL;
 
 static void AIHelp_onNetworkCheckFinish(const NSString * log) {
     if(s_theAIhelpNetworkCheckCallBack && log != nil) {
         s_theAIhelpNetworkCheckCallBack([log UTF8String]);
-    }
-}
-
-static void AIHelp_onAIHelpInit() {
-    if(s_theAIhelpInitCallBack) {
-        s_theAIhelpInitCallBack();
-    }
-}
-
-static void AIHelp_onAIHelpUnreadMessage(const int unreadCount) {
-    if(s_theAIhelpUnreadMessageCallBack) {
-        s_theAIhelpUnreadMessageCallBack(unreadCount);
     }
 }
 
@@ -44,12 +26,6 @@ static NSString* AIHelpParseCString(const char *cstring) {
                                                    length:strlen(cstring)
                                                  encoding:NSUTF8StringEncoding];
     return nsstring;
-}
-
-static void AIHelp_onAIHelpOperationUnreadMessage(const bool hasUnread) {
-    if(s_theAIHelpOperationUnreadCallback) {
-        s_theAIHelpOperationUnreadCallback(hasUnread);
-    }
 }
 
 #pragma mark - Interface implementation
@@ -288,17 +264,15 @@ void AIHelpSupport::setNetworkCheckHostAddress(string address, OnNetworkCheckRes
 }
 
 void AIHelpSupport::setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback) {
-    s_theAIhelpInitCallBack = callback;
-    [AIHelpSupportSDK setOnInitializedCallback:AIHelp_onAIHelpInit];
+
+    [AIHelpSupportSDK setOnInitializedCallback:callback];
 }
 
 void AIHelpSupport::startUnreadMessageCountPolling(OnMessageCountArrivedCallback callback) {
-    s_theAIhelpUnreadMessageCallBack = callback;
-    [AIHelpSupportSDK startUnreadMessageCountPolling:AIHelp_onAIHelpUnreadMessage];
+    [AIHelpSupportSDK startUnreadMessageCountPolling:callback];
 }
 
 void AIHelpSupport::setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCallback callback) {
-    s_theAIhelpSpecificFormSubmittedCallback = callback;
     [AIHelpSupportSDK setOnSpecificFormSubmittedCallback:callback];
 }
 
@@ -315,18 +289,15 @@ void AIHelpSupport::setSDKEdgeColor(float red,float green,float blue,float alpha
 }
 
 void AIHelpSupport::setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback callback) {
-    s_theAIhelpOnAIHelpSessionOpenCallback = callback;
     [AIHelpSupportSDK setOnAIHelpSessionOpenCallback:callback];
 }
 
 void AIHelpSupport::setOnAIHelpSessionCloseCallback(OnAIHelpSessionCloseCallback callback) {
-    s_theAIhelpOnAIHelpSessionCloseCallback = callback;
     [AIHelpSupportSDK setOnAIHelpSessionCloseCallback:callback];
 }
 
 void AIHelpSupport::setOnAIHelpOperationUnreadChangedCallback(OnAIHelpOperationUnreadCallback callback)
 {
-    s_theAIHelpOperationUnreadCallback = callback;
     [AIHelpSupportSDK setOnOperationUnreadChangedCallback:callback];
 }
 

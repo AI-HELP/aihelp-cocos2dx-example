@@ -32,7 +32,10 @@ static void AIHelp_onOperationUnreadChanged(bool hasUnreadArticles) {
     } else {
         CCLOG("AIHelp Cocos2dx Callback no unread articles");
     }
+}
 
+static void AIHelp_onNetworkCallback(const char * log) {
+    CCLOG("AIHelp Cocos2dx Callback network check callback %s", log);
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
@@ -63,9 +66,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // init AIHelp
     AIHelpSupport::enableLogging(true);
     AIHelpSupport::init(
-            "this is appKey",
-            "this is domain",
-            "this is appId");
+            "THIS IS YOUR APP KEY",
+            "THIS IS YOUR DOMAIN",
+            "THIS IS YOUR APP ID");
     AIHelpSupport::setOnAIHelpInitializedCallback(AIHelp_onAIHelpInit);
     AIHelpSupport::setOnAIHelpOperationUnreadChangedCallback(AIHelp_onOperationUnreadChanged);
     

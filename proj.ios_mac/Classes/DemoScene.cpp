@@ -274,8 +274,7 @@ void GameScene::enableLogging(cocos2d::Ref *obj) {
 }
 
 void GameScene::getSDKVersion(cocos2d::Ref *obj) {
-//    CCLOGERROR("AIHelp version is %s", AIHelpSupport::getSDKVersion().c_str());
-    AIHelpSupport::showUrl("https://www.baidu.com");
+    CCLOGERROR("AIHelp version is %s", AIHelpSupport::getSDKVersion().c_str());
 }
 
 // ================================= Others =================================

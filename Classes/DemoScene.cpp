@@ -71,11 +71,6 @@ bool GameScene::init() {
     menuItemSingleFAQ->setPosition(Vec2(150, 170));
     menuItemSingleFAQ->setColor(Color3B(51, 51, 51));
 
-    auto menuItemOperation = MenuItemFont::create("Operation",
-                                                  CC_CALLBACK_1(GameScene::showOperation, this));
-    menuItemOperation->setPosition(Vec2(150, 100));
-    menuItemOperation->setColor(Color3B(51, 51, 51));
-
     // ================================= Modules =================================
 
     // ================================= Configuration =================================
@@ -135,7 +130,7 @@ bool GameScene::init() {
     // ================================= Configuration =================================
 
     auto menu = Menu::create(menuItemBot, menuItemManual, menuItemAllSections, menuItemSingle,
-                             menuItemSingleFAQ, menuItemOperation, menuItemLogin, menuItemLogout,
+                             menuItemSingleFAQ, menuItemLogin, menuItemLogout,
                              goInternational,
                              menuItemUnread, menuItemPush, menuItemNetCheck, menuItemUploadLog,
                              menuItemLog, menuItemVersion, NULL);
@@ -148,69 +143,26 @@ bool GameScene::init() {
 // ================================= Modules =================================
 
 void GameScene::showBotSupport(cocos2d::Ref *obj) {
-    ConversationConfig config = ConversationConfigBuilder()
-            .setConversationIntent(BOT_SUPPORT)
-            .setAlwaysShowHumanSupportButtonInBotPage(true)
-            .build();
-    AIHelpSupport::showConversation(config);
+    AIHelpSupport::show("test004");
 }
 
 void GameScene::showManualSupport(cocos2d::Ref *obj) {
-    ConversationConfig config = ConversationConfigBuilder()
-            .setConversationIntent(HUMAN_SUPPORT)
-            .setWelcomeMessage("You can configure special welcome message for your end users at here.")
-            .build();
-    AIHelpSupport::showConversation(config);
+    AIHelpSupportApiConfig apiConfig = AIHelpSupportApiConfigBuilder()
+            .setEntranceId("THIS IS YOUR ENTRANCE ID")
+            .setWelcomeMessage("THIS IS YOUR WELCOME MESSAGE").build();
+    AIHelpSupport::show(apiConfig);
 }
 
 void GameScene::showAllFAQSections(cocos2d::Ref *obj) {
-    ConversationConfigBuilder conversationConfigBuilder = ConversationConfigBuilder();
-    conversationConfigBuilder.setAlwaysShowHumanSupportButtonInBotPage(true);
-    conversationConfigBuilder.setConversationIntent(ConversationIntent::BOT_SUPPORT);
-    conversationConfigBuilder.setWelcomeMessage("What can I do for you");
-
-    FAQConfigBuilder faqBuilder = FAQConfigBuilder();
-    faqBuilder.setShowConversationMoment(ConversationMoment::ALWAYS);
-    faqBuilder.setConversationConfig(conversationConfigBuilder.build());
-
-    AIHelpSupport::showAllFAQSections(faqBuilder.build());
+    AIHelpSupport::show("test001");
 }
 
 void GameScene::showSingleSection(cocos2d::Ref *obj) {
-    ConversationConfig faqConversationConfig = ConversationConfigBuilder()
-            .setConversationIntent(HUMAN_SUPPORT)
-            .setWelcomeMessage("Hi, there, is there anything I can do for you?")
-            .build();
-    FAQConfig config = FAQConfigBuilder()
-            .setShowConversationMoment(AFTER_MARKING_UNHELPFUL)
-            .setConversationConfig(faqConversationConfig)
-            .build();
-    AIHelpSupport::showFAQSection("Section ID", config);
+    AIHelpSupport::show("test002");
 }
 
 void GameScene::showSingleFAQ(cocos2d::Ref *obj) {
-    ConversationConfig faqConversationConfig = ConversationConfigBuilder()
-            .setConversationIntent(HUMAN_SUPPORT)
-            .setWelcomeMessage("Hi, there, is there anything I can do for you?")
-            .build();
-    FAQConfig config = FAQConfigBuilder()
-            .setShowConversationMoment(ALWAYS)
-            .setConversationConfig(faqConversationConfig)
-            .build();
-    AIHelpSupport::showSingleFAQ("FAQ ID", config);
-}
-
-void GameScene::showOperation(cocos2d::Ref *obj) {
-    ConversationConfig operationConversationConfig = ConversationConfigBuilder()
-            .setAlwaysShowHumanSupportButtonInBotPage(true)
-            .setWelcomeMessage("This is special configured welcome message for operation entrance.")
-            .build();
-    OperationConfig config = OperationConfigBuilder()
-            .setConversationTitle("Hi, there")
-            .setSelectIndex(2)
-            .setConversationConfig(operationConversationConfig)
-            .build();
-    AIHelpSupport::showOperation(config);
+    AIHelpSupport::show("test003");
 }
 
 // ================================= Modules =================================

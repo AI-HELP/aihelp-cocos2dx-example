@@ -11,10 +11,28 @@
 #pragma mark Utility methods.
 
 static OnNetworkCheckResultCallback s_theAIhelpNetworkCheckCallBack = NULL;
+static OnAIHelpInitializedCallback s_theAIhelpInitCallBack = NULL;
+static OnMessageCountArrivedCallback s_theAIhelpUnreadMessageCallBack = NULL;
+static OnSpecificFormSubmittedCallback s_theAIhelpSpecificFormSubmittedCallback = NULL;
+static OnAIHelpSessionOpenCallback s_theAIhelpOnAIHelpSessionOpenCallback = NULL;
+static OnAIHelpSessionCloseCallback s_theAIhelpOnAIHelpSessionCloseCallback = NULL;
+static OnAIHelpSpecificUrlClickedCallback s_theAIHelpSpecificUrlClickedCallback = NULL;
 
 static void AIHelp_onNetworkCheckFinish(const NSString * log) {
     if(s_theAIhelpNetworkCheckCallBack && log != nil) {
         s_theAIhelpNetworkCheckCallBack([log UTF8String]);
+    }
+}
+
+static void AIHelp_onAIHelpInit() {
+    if(s_theAIhelpInitCallBack) {
+        s_theAIhelpInitCallBack();
+    }
+}
+
+static void AIHelp_onAIHelpUnreadMessage(const int unreadCount) {
+    if(s_theAIhelpUnreadMessageCallBack) {
+        s_theAIhelpUnreadMessageCallBack(unreadCount);
     }
 }
 
@@ -30,14 +48,14 @@ static NSString* AIHelpParseCString(const char *cstring) {
 
 #pragma mark - Interface implementation
 
-void AIHelpSupport::init(string apiKey, string domainName, string appId) {
+void AIHelpSupport::init(const string& apiKey, const string& domainName, const string& appId) {
     NSString *nsApikey = AIHelpParseCString(apiKey.c_str());
     NSString *nsDomainName = AIHelpParseCString(domainName.c_str());
     NSString *nsAppId = AIHelpParseCString(appId.c_str());
     [AIHelpSupportSDK initWithApiKey:nsApikey domainName:nsDomainName appId:nsAppId];
 }
 
-void AIHelpSupport::init(string apiKey, string domainName, string appId, string language) {
+void AIHelpSupport::init(const string& apiKey, const string& domainName, const string& appId, const string& language) {
     NSString *nsApikey = AIHelpParseCString(apiKey.c_str());
     NSString *nsDomainName = AIHelpParseCString(domainName.c_str());
     NSString *nsAppId = AIHelpParseCString(appId.c_str());
@@ -45,125 +63,15 @@ void AIHelpSupport::init(string apiKey, string domainName, string appId, string 
     [AIHelpSupportSDK initWithApiKey:nsApikey domainName:nsDomainName appId:nsAppId language:nsLanguage];
 }
 
-void AIHelpSupport::showConversation() {
-    [AIHelpSupportSDK showConversation];
+bool AIHelpSupport::show(string entranceId) {
+    return [AIHelpSupportSDK showWithEntranceId:AIHelpParseCString(entranceId.c_str())];
 }
 
-void AIHelpSupport::showConversation(ConversationConfig conversationConfig) {
-    bool alwaysOnline = conversationConfig.getAlwaysShowHumanSupportButtonInBotPage();
-    string welcome = conversationConfig.getWelcomeMessage();
-    string storyNode = conversationConfig.getStoryNode();
-    
-    AIHelpConversationConfigBuilder *builder = [[AIHelpConversationConfigBuilder alloc] init];
-    builder.welcomeMessage = AIHelpParseCString(welcome.c_str());
-    builder.alwaysShowHumanSupportButtonInBotPage = alwaysOnline;
-    builder.storyNode = AIHelpParseCString(storyNode.c_str());
-    builder.conversationIntent = conversationConfig.getConversationIntent() == HUMAN_SUPPORT?AIHelpConversationIntentHumanSupport:AIHelpConversationIntentBotSupport;
-    [AIHelpSupportSDK showConversation:builder.build];
-}
-
-void AIHelpSupport::showAllFAQSections() {
-    [AIHelpSupportSDK showAllFAQSections];
-}
-
-void AIHelpSupport::showAllFAQSections(FAQConfig faqConfig) {
-    ConversationConfig conversationConfig = faqConfig.getConversationConfig();
-    bool alwaysOnline = conversationConfig.getAlwaysShowHumanSupportButtonInBotPage();
-    string welcome = conversationConfig.getWelcomeMessage();
-    
-    AIHelpConversationConfigBuilder *conversationConfigbuilder = [[AIHelpConversationConfigBuilder alloc] init];
-    conversationConfigbuilder.welcomeMessage = AIHelpParseCString(welcome.c_str());
-    conversationConfigbuilder.alwaysShowHumanSupportButtonInBotPage = alwaysOnline;
-    conversationConfigbuilder.conversationIntent = conversationConfig.getConversationIntent() == HUMAN_SUPPORT?AIHelpConversationIntentHumanSupport:AIHelpConversationIntentBotSupport;
-    
-    AIHelpFAQConfigBuilder *faqBuilder = [[AIHelpFAQConfigBuilder alloc] init];
-    if (faqConfig.getShowConversationMoment() == NEVER) {
-        faqBuilder.showConversationMoment = AIHelpFAQShowConversationMomentNever;
-    }else if (faqConfig.getShowConversationMoment() == ALWAYS) {
-        faqBuilder.showConversationMoment = AIHelpFAQShowConversationMomentAlways;
-    }else if (faqConfig.getShowConversationMoment() == AFTER_MARKING_UNHELPFUL) {
-        faqBuilder.showConversationMoment = AIHelpFAQShowConversationMomentAfterMarkingUnhelpful;
-    }
-    faqBuilder.conversationConfig = conversationConfigbuilder.build;
-    [AIHelpSupportSDK showAllFAQSections:faqBuilder.build];
-}
-
-void AIHelpSupport::showFAQSection(string sectionId) {
-    NSString *nsSectionId = AIHelpParseCString(sectionId.c_str());
-    [AIHelpSupportSDK showFAQSection:nsSectionId];
-}
-
-void AIHelpSupport::showFAQSection(string sectionId, FAQConfig faqConfig) {
-    NSString *nsSectionId = AIHelpParseCString(sectionId.c_str());
-    ConversationConfig conversationConfig = faqConfig.getConversationConfig();
-    bool alwaysOnline = conversationConfig.getAlwaysShowHumanSupportButtonInBotPage();
-    string welcome = conversationConfig.getWelcomeMessage();
-    
-    AIHelpConversationConfigBuilder *conversationConfigbuilder = [[AIHelpConversationConfigBuilder alloc] init];
-    conversationConfigbuilder.welcomeMessage = AIHelpParseCString(welcome.c_str());
-    conversationConfigbuilder.alwaysShowHumanSupportButtonInBotPage = alwaysOnline;
-    conversationConfigbuilder.conversationIntent = conversationConfig.getConversationIntent() == HUMAN_SUPPORT?AIHelpConversationIntentHumanSupport:AIHelpConversationIntentBotSupport;
-    
-    AIHelpFAQConfigBuilder *faqBuilder = [[AIHelpFAQConfigBuilder alloc] init];
-    if (faqConfig.getShowConversationMoment() == NEVER) {
-        faqBuilder.showConversationMoment = AIHelpFAQShowConversationMomentNever;
-    }else if (faqConfig.getShowConversationMoment() == ALWAYS) {
-        faqBuilder.showConversationMoment = AIHelpFAQShowConversationMomentAlways;
-    }else if (faqConfig.getShowConversationMoment() == AFTER_MARKING_UNHELPFUL) {
-        faqBuilder.showConversationMoment = AIHelpFAQShowConversationMomentAfterMarkingUnhelpful;
-    }
-    faqBuilder.conversationConfig = conversationConfigbuilder.build;
-    [AIHelpSupportSDK showFAQSection:nsSectionId config:faqBuilder.build];
-}
-
-void AIHelpSupport::showSingleFAQ(string faqId) {
-    NSString *nsFaqId = AIHelpParseCString(faqId.c_str());
-    [AIHelpSupportSDK showSingleFAQ:nsFaqId];
-}
-
-void AIHelpSupport::showSingleFAQ(string faqId, FAQConfig faqConfig) {
-    NSString *nsFaqId = AIHelpParseCString(faqId.c_str());
-    ConversationConfig conversationConfig = faqConfig.getConversationConfig();
-    bool alwaysOnline = conversationConfig.getAlwaysShowHumanSupportButtonInBotPage();
-    string welcome = conversationConfig.getWelcomeMessage();
-    
-    AIHelpConversationConfigBuilder *conversationConfigbuilder = [[AIHelpConversationConfigBuilder alloc] init];
-    conversationConfigbuilder.welcomeMessage = AIHelpParseCString(welcome.c_str());
-    conversationConfigbuilder.alwaysShowHumanSupportButtonInBotPage = alwaysOnline;
-    conversationConfigbuilder.conversationIntent = conversationConfig.getConversationIntent() == HUMAN_SUPPORT?AIHelpConversationIntentHumanSupport:AIHelpConversationIntentBotSupport;
-    
-    AIHelpFAQConfigBuilder *faqBuilder = [[AIHelpFAQConfigBuilder alloc] init];
-    if (faqConfig.getShowConversationMoment() == NEVER) {
-        faqBuilder.showConversationMoment = AIHelpFAQShowConversationMomentNever;
-    }else if (faqConfig.getShowConversationMoment() == ALWAYS) {
-        faqBuilder.showConversationMoment = AIHelpFAQShowConversationMomentAlways;
-    }else if (faqConfig.getShowConversationMoment() == AFTER_MARKING_UNHELPFUL) {
-        faqBuilder.showConversationMoment = AIHelpFAQShowConversationMomentAfterMarkingUnhelpful;
-    }
-    faqBuilder.conversationConfig = conversationConfigbuilder.build;
-    [AIHelpSupportSDK showSingleFAQ:nsFaqId config:faqBuilder.build];
-}
-
-void AIHelpSupport::showOperation() {
-    [AIHelpSupportSDK showOperation];
-}
-
-void AIHelpSupport::showOperation(OperationConfig operationConfig) {
-    NSString *nsBotTitle = AIHelpParseCString(operationConfig.getConversationTitle().c_str());
-    ConversationConfig conversationConfig = operationConfig.getConversationConfig();
-    bool alwaysOnline = conversationConfig.getAlwaysShowHumanSupportButtonInBotPage();
-    string welcome = conversationConfig.getWelcomeMessage();
-    
-    AIHelpConversationConfigBuilder *conversationConfigbuilder = [[AIHelpConversationConfigBuilder alloc] init];
-    conversationConfigbuilder.welcomeMessage = AIHelpParseCString(welcome.c_str());
-    conversationConfigbuilder.alwaysShowHumanSupportButtonInBotPage = alwaysOnline;
-    conversationConfigbuilder.conversationIntent = conversationConfig.getConversationIntent() == HUMAN_SUPPORT?AIHelpConversationIntentHumanSupport:AIHelpConversationIntentBotSupport;
-    
-    AIHelpOperationConfigBuilder *opConfigbuilder = [[AIHelpOperationConfigBuilder alloc] init];
-    opConfigbuilder.selectIndex = operationConfig.getSelectIndex();
-    opConfigbuilder.conversationTitle = nsBotTitle;
-    opConfigbuilder.conversationConfig = conversationConfigbuilder.build;
-    [AIHelpSupportSDK showOperation:opConfigbuilder.build];
+bool AIHelpSupport::show(AIHelpApiConfig *apiConfig) {
+    AIHelpApiConfigBuilder *configBuilder = [[AIHelpApiConfigBuilder alloc] init];
+    configBuilder.entranceId = AIHelpParseCString(apiConfig.getEntranceId());
+    configBuilder.welcomeMessage = AIHelpParseCString(apiConfig.getWelcomeMessage());
+    return [AIHelpSupportSDK show:configBuilder.build];
 }
 
 void AIHelpSupport::updateUserInfo(AIHelpSupportUserConfig userConfig) {
@@ -196,17 +104,17 @@ void AIHelpSupport::resetUserInfo() {
     [AIHelpSupportSDK resetUserInfo];
 }
 
-void AIHelpSupport::updateSDKLanguage(string language) {
+void AIHelpSupport::updateSDKLanguage(const string& language) {
     NSString *nslanguage = AIHelpParseCString(language.c_str());
     [AIHelpSupportSDK updateSDKLanguage:nslanguage];
 }
 
-void AIHelpSupport::setUploadLogPath(string path) {
+void AIHelpSupport::setUploadLogPath(const string& path) {
     NSString *nspath = AIHelpParseCString(path.c_str());
     [AIHelpSupportSDK setUploadLogPath:nspath];
 }
 
-void AIHelpSupport::setPushTokenAndPlatform(string pushToken, PushPlatform platform) {
+void AIHelpSupport::setPushTokenAndPlatform(const string& pushToken, PushPlatform platform) {
     NSString *nspushToken = AIHelpParseCString(pushToken.c_str());
     AIHelpTokenPlatform ePlatform;
     switch (platform) {
@@ -240,7 +148,7 @@ void AIHelpSupport::enableLogging(bool enable) {
     [AIHelpSupportSDK enableLogging:enable];
 }
 
-void AIHelpSupport::showUrl(string url) {
+void AIHelpSupport::showUrl(const string& url) {
     NSString *urlStr = AIHelpParseCString(url.c_str());
     [AIHelpSupportSDK showUrl:urlStr];
 }
@@ -257,22 +165,24 @@ void AIHelpSupport::setSDKInterfaceOrientationMask(int interfaceOrientationMask)
     [AIHelpSupportSDK setSDKInterfaceOrientationMask:interfaceOrientationMask];
 }
 
-void AIHelpSupport::setNetworkCheckHostAddress(string address, OnNetworkCheckResultCallback callback) {
+void AIHelpSupport::setNetworkCheckHostAddress(const string& address, OnNetworkCheckResultCallback callback) {
     NSString *nsaddress = AIHelpParseCString(address.c_str());
     s_theAIhelpNetworkCheckCallBack = callback;
     [AIHelpSupportSDK setNetworkCheckHostAddress:nsaddress callback:AIHelp_onNetworkCheckFinish];
 }
 
 void AIHelpSupport::setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback) {
-
-    [AIHelpSupportSDK setOnInitializedCallback:callback];
+    s_theAIhelpInitCallBack = callback;
+    [AIHelpSupportSDK setOnInitializedCallback:AIHelp_onAIHelpInit];
 }
 
 void AIHelpSupport::startUnreadMessageCountPolling(OnMessageCountArrivedCallback callback) {
-    [AIHelpSupportSDK startUnreadMessageCountPolling:callback];
+    s_theAIhelpUnreadMessageCallBack = callback;
+    [AIHelpSupportSDK startUnreadMessageCountPolling:AIHelp_onAIHelpUnreadMessage];
 }
 
 void AIHelpSupport::setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCallback callback) {
+    s_theAIhelpSpecificFormSubmittedCallback = callback;
     [AIHelpSupportSDK setOnSpecificFormSubmittedCallback:callback];
 }
 
@@ -289,17 +199,25 @@ void AIHelpSupport::setSDKEdgeColor(float red,float green,float blue,float alpha
 }
 
 void AIHelpSupport::setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback callback) {
+    s_theAIhelpOnAIHelpSessionOpenCallback = callback;
     [AIHelpSupportSDK setOnAIHelpSessionOpenCallback:callback];
 }
 
 void AIHelpSupport::setOnAIHelpSessionCloseCallback(OnAIHelpSessionCloseCallback callback) {
+    s_theAIhelpOnAIHelpSessionCloseCallback = callback;
     [AIHelpSupportSDK setOnAIHelpSessionCloseCallback:callback];
 }
 
-void AIHelpSupport::setOnAIHelpOperationUnreadChangedCallback(OnAIHelpOperationUnreadCallback callback)
+void setOnAIHelpOperationUnreadChangedCallback(OnAIHelpOperationUnreadCallback callback)
 {
+    s_theAIHelpOperationUnreadCallback = callback;
     [AIHelpSupportSDK setOnOperationUnreadChangedCallback:callback];
 }
 
+void setOnAIHelpSpecificUrlClickedCallback(OnAIHelpSpecificUrlClickedCallback callback)
+{
+    s_theAIHelpSpecificUrlClickedCallback = callback;
+    [AIHelpSupportSDK setOnAIHelpSpecificUrlClickedCallback:callback];
+}
 
 #endif

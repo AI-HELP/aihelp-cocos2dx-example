@@ -11,100 +11,33 @@
 #include <string>
 using namespace std;
 
-enum ConversationIntent {BOT_SUPPORT, HUMAN_SUPPORT};
-enum ConversationMoment {NEVER, ALWAYS, ONLY_IN_ANSWER_PAGE, AFTER_MARKING_UNHELPFUL};
 enum PushPlatform {APNS, FIREBASE, JPUSH, GETUI};
 enum PublishCountryOrRegion {CN = 1, IN = 2};
-/* ConversationConfig */
-class ConversationConfig {
+
+/* AIHelpSupportApiConfig */
+class AIHelpSupportApiConfig {
 private:
-    bool alwaysShowHumanSupportButtonInBotPage;
+    string entranceId;
     string welcomeMessage;
-    string storyNode;
-    ConversationIntent conversationIntent;
 public:
-    ConversationConfig(){};
-    ConversationConfig(bool alwaysShowHumanSupportButtonInBotPage, string welcomeMessage, string storyNode, ConversationIntent conversationIntent);
-    bool getAlwaysShowHumanSupportButtonInBotPage();
+    AIHelpSupportApiConfig(string entranceId, string welcomeMessage);
+    string getEntranceId();
     string getWelcomeMessage();
-    string getStoryNode();
-    ConversationIntent getConversationIntent();
 };
 
-/* ConversationConfigBuilder */
-class ConversationConfigBuilder {
+/* AIHelpSupportApiConfigBuilder */
+class AIHelpSupportApiConfigBuilder {
 private:
-    bool alwaysShowHumanSupportButtonInBotPage;
+    string entranceId;
     string welcomeMessage;
-    string storyNode;
-    ConversationIntent conversationIntent;
 public:
-    ConversationConfigBuilder(){};
-    ~ConversationConfigBuilder(){};
-    ConversationConfigBuilder(const ConversationConfigBuilder& rBuilder);
-    ConversationConfigBuilder setAlwaysShowHumanSupportButtonInBotPage(bool alwaysShowHumanSupportButtonInBotPage);
-    ConversationConfigBuilder setWelcomeMessage(string welcomeMessage);
-    ConversationConfigBuilder setStoryNode(string storyNode);
-    ConversationConfigBuilder setConversationIntent(ConversationIntent conversationIntent);
-    ConversationConfig build();
+    AIHelpSupportApiConfigBuilder(){};
+    ~AIHelpSupportApiConfigBuilder(){};
+    AIHelpSupportApiConfigBuilder(const AIHelpSupportApiConfigBuilder& rBuilder);
+    AIHelpSupportApiConfigBuilder setEntranceId(string entranceId);
+    AIHelpSupportApiConfigBuilder setWelcomeMessage(string welcomeMessage);
+    AIHelpSupportApiConfig build();
 };
-
-
-/* FAQConfig */
-class FAQConfig {
-private:
-    ConversationMoment showConversationMoment;
-    const ConversationConfig& conversationConfig;
-public:
-    FAQConfig(ConversationMoment showConversationMoment,const ConversationConfig& conversationConfig);
-    ConversationMoment getShowConversationMoment();
-    const ConversationConfig& getConversationConfig();
-};
-
-/* FAQConfigBuilder */
-class FAQConfigBuilder {
-private:
-    ConversationMoment showConversationMoment;
-    ConversationConfig conversationConfig;
-public:
-    FAQConfigBuilder(){};
-    ~FAQConfigBuilder(){};
-    FAQConfigBuilder(const FAQConfigBuilder& rBuilder);
-    FAQConfigBuilder setShowConversationMoment(ConversationMoment showConversationMoment);
-    FAQConfigBuilder setConversationConfig(const ConversationConfig& conversationConfig);
-    FAQConfig build();
-};
-
-
-/* OperationConfig */
-class OperationConfig {
-private:
-    int selectIndex;
-    string conversationTitle;
-    const ConversationConfig& conversationConfig;
-public:
-    OperationConfig(int selectIndex, string conversationTitle, const ConversationConfig& conversationConfig);
-    int getSelectIndex();
-    string getConversationTitle();
-    const ConversationConfig& getConversationConfig();
-};
-
-/* OperationConfigBuilder */
-class OperationConfigBuilder {
-private:
-    int selectIndex;
-    string conversationTitle;
-    ConversationConfig conversationConfig;
-public:
-    OperationConfigBuilder(){};
-    ~OperationConfigBuilder(){};
-    OperationConfigBuilder(const OperationConfigBuilder& rBuilder);
-    OperationConfigBuilder setSelectIndex(int selectIndex);
-    OperationConfigBuilder setConversationTitle(string conversationTitle);
-    OperationConfigBuilder setConversationConfig(const ConversationConfig& conversationConfig);
-    OperationConfig build();
-};
-
 
 /* AIHelpSupportUserConfig */
 class AIHelpSupportUserConfig {

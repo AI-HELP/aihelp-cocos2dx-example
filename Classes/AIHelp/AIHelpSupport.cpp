@@ -1,7 +1,8 @@
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-
 #include "AIHelpConfig.h"
 #include "AIHelpSupport.h"
+#include <utility>
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 
 #define  LOG_TAG    "AIHelpSupport"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
@@ -9,83 +10,53 @@
 
 const char *supportClazzName = "net/aihelp/init/AIHelpSupport";
 
-OnAIHelpInitializedCallback initCallBack = NULL;
-OnNetworkCheckResultCallback networkCheckCallBack = NULL;
-OnMessageCountArrivedCallback unreadMsgCallback = NULL;
-OnSpecificFormSubmittedCallback formSubmittedCallback = NULL;
-OnAIHelpSessionOpenCallback sessionOpenCallback = NULL;
-OnAIHelpSessionCloseCallback sessionCloseCallback = NULL;
-OnAIHelpOperationUnreadCallback operationUnreadCallback = NULL;
+OnAIHelpInitializedCallback initCallBack = nullptr;
+OnNetworkCheckResultCallback networkCheckCallBack = nullptr;
+OnMessageCountArrivedCallback unreadMsgCallback = nullptr;
+OnSpecificFormSubmittedCallback formSubmittedCallback = nullptr;
+OnAIHelpSessionOpenCallback sessionOpenCallback = nullptr;
+OnAIHelpSessionCloseCallback sessionCloseCallback = nullptr;
+OnAIHelpSpecificUrlClickedCallback specificUrlClickedCallback = nullptr;
 
-jstring string2jstring(string str) {
-    return cocos2d::JniHelper::getEnv()->NewStringUTF(str.c_str());
-}
-
-jobject getJavaConversationConfig(ConversationConfig conversationConfig) {
-    JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
-    jclass clazz = jniEnv->FindClass("net/aihelp/config/ConversationConfig$Builder");
-    jobject obj = jniEnv->NewObject(clazz, jniEnv->GetMethodID(clazz, "<init>", "()V"));
-
-    jint intentValue = conversationConfig.getConversationIntent() == HUMAN_SUPPORT ? 2 : 1;
-
-    bool isAlwaysOnline = conversationConfig.getAlwaysShowHumanSupportButtonInBotPage();
-    jstring welcomeMsg = jniEnv->NewStringUTF(conversationConfig.getWelcomeMessage().c_str());
-    jstring storyNode = jniEnv->NewStringUTF(conversationConfig.getStoryNode().c_str());
-
-    const char *sig = "(IZLjava/lang/String;Ljava/lang/String;)Lnet/aihelp/config/ConversationConfig;";
-    jmethodID buildId = jniEnv->GetMethodID(clazz, "build", sig);
-    return jniEnv->CallObjectMethod(obj, buildId, intentValue, isAlwaysOnline, welcomeMsg,
-                                    storyNode);
-}
-
-jobject getJavaFaqConfig(FAQConfig faqConfig) {
-    JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
-    jclass clazz = jniEnv->FindClass("net/aihelp/config/FaqConfig$Builder");
-    jobject builderObj = jniEnv->NewObject(clazz, jniEnv->GetMethodID(clazz, "<init>", "()V"));
-    jint supportMoment = 1001;
-    switch (faqConfig.getShowConversationMoment()) {
-        case NEVER:
-            supportMoment = 1001;
-            break;
-        case ALWAYS:
-            supportMoment = 1002;
-            break;
-        case ONLY_IN_ANSWER_PAGE:
-            supportMoment = 1003;
-            break;
-        case AFTER_MARKING_UNHELPFUL:
-            supportMoment = 1004;
-            break;
+jobject getAndroidContext() {
+    const char *sig = "()Lorg/cocos2dx/cpp/AppActivity;";
+    cocos2d::JniMethodInfo methodInfo;
+    if (cocos2d::JniHelper::getStaticMethodInfo(
+            methodInfo,"org/cocos2dx/cpp/AppActivity", "getAppActivity", sig)) {
+        return methodInfo.env->CallStaticObjectMethod(methodInfo.classID, methodInfo.methodID);
     }
-
-    const char *sig = "(ILnet/aihelp/config/ConversationConfig;)Lnet/aihelp/config/FaqConfig;";
-    jmethodID buildId = jniEnv->GetMethodID(clazz, "build", sig);
-    jobject supportConfig = getJavaConversationConfig(faqConfig.getConversationConfig());
-    return jniEnv->CallObjectMethod(builderObj, buildId, supportMoment, supportConfig);
+    return nullptr;
 }
 
-jobject getJavaOperationConfig(OperationConfig operationConfig) {
-    JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
-    jclass clazz = jniEnv->FindClass("net/aihelp/config/OperationConfig$Builder");
+jstring string2jstring(JNIEnv *jniEnv, const string& str) {
+    return jniEnv->NewStringUTF(str.c_str());
+}
+
+jobject getJavaApiConfig(JNIEnv *jniEnv, AIHelpSupportApiConfig apiConfig) {
+    jclass clazz = jniEnv->FindClass("net/aihelp/config/ApiConfig$Builder");
     jobject builderObj = jniEnv->NewObject(clazz, jniEnv->GetMethodID(clazz, "<init>", "()V"));
-    const char *sig = "(ILjava/lang/String;Lnet/aihelp/config/ConversationConfig;)Lnet/aihelp/config/OperationConfig;";
+
+    jstring entranceId = string2jstring(jniEnv, apiConfig.getEntranceId());
+    jstring welcomeMessage = string2jstring(jniEnv, apiConfig.getWelcomeMessage());
+
+    const char *sig = "(Ljava/lang/String;Ljava/lang/String;)Lnet/aihelp/config/ApiConfig;";
     jmethodID buildId = jniEnv->GetMethodID(clazz, "build", sig);
-    return jniEnv->CallObjectMethod(builderObj, buildId, operationConfig.getSelectIndex(),
-                                    string2jstring(operationConfig.getConversationTitle()),
-                                    getJavaConversationConfig(
-                                            operationConfig.getConversationConfig()));
+    jobject javaUserConfig = jniEnv->CallObjectMethod(builderObj, buildId, entranceId, welcomeMessage);
+
+    jniEnv->DeleteLocalRef(entranceId);
+    jniEnv->DeleteLocalRef(welcomeMessage);
+    return javaUserConfig;
 }
 
-jobject getJavaUserConfig(AIHelpSupportUserConfig userConfig) {
-    JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
+jobject getJavaUserConfig(JNIEnv *jniEnv, AIHelpSupportUserConfig userConfig) {
     jclass clazz = jniEnv->FindClass("net/aihelp/config/UserConfig$Builder");
     jobject builderObj = jniEnv->NewObject(clazz, jniEnv->GetMethodID(clazz, "<init>", "()V"));
 
-    jstring userId = string2jstring(userConfig.getUserId());
-    jstring userName = string2jstring(userConfig.getUserName());
-    jstring serverId = string2jstring(userConfig.getServerId());
-    jstring userTag = string2jstring(userConfig.getUserTags());
-    jstring customData = string2jstring(userConfig.getCustomData());
+    jstring userId = string2jstring(jniEnv, userConfig.getUserId());
+    jstring userName = string2jstring(jniEnv, userConfig.getUserName());
+    jstring serverId = string2jstring(jniEnv, userConfig.getServerId());
+    jstring userTag = string2jstring(jniEnv, userConfig.getUserTags());
+    jstring customData = string2jstring(jniEnv, userConfig.getCustomData());
     bool isSync = userConfig.getIsSyncCrmInfo();
 
     const char *sig = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lnet/aihelp/config/UserConfig;";
@@ -102,8 +73,8 @@ jobject getJavaUserConfig(AIHelpSupportUserConfig userConfig) {
     return javaUserConfig;
 }
 
-jobject getJavaPushPlatform(PushPlatform platform) {
-    jint pf = 0;
+jobject getJavaPushPlatform(JNIEnv *jniEnv, PushPlatform platform) {
+    int pf = 0;
     if (platform == APNS) {
         pf = 1;
     } else if (platform == FIREBASE) {
@@ -113,38 +84,36 @@ jobject getJavaPushPlatform(PushPlatform platform) {
     } else if (platform == GETUI) {
         pf = 4;
     }
-    JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
     jclass clazz = jniEnv->FindClass("net/aihelp/config/enums/PushPlatform");
     jmethodID fromValueId = jniEnv->GetStaticMethodID(clazz, "fromValue",
                                                       "(I)Lnet/aihelp/config/enums/PushPlatform;");
     return jniEnv->CallStaticObjectMethod(clazz, fromValueId, pf);
 }
 
-jobject getJavaPublishCountryOrRegion(PublishCountryOrRegion countryOrRegion){
-    jint jCountryOrRegion = -1;
+jobject getJavaPublishCountryOrRegion(JNIEnv *jniEnv, PublishCountryOrRegion countryOrRegion){
+    int jCountryOrRegion = -1;
     if (countryOrRegion == CN) {
         jCountryOrRegion = 1;
     } else if (countryOrRegion == IN) {
         jCountryOrRegion = 2;
     }
-    JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
     jclass clazz = jniEnv->FindClass("net/aihelp/config/enums/PublishCountryOrRegion");
     jmethodID fromValueId = jniEnv->GetStaticMethodID(clazz, "fromValue",
                                                       "(I)Lnet/aihelp/config/enums/PublishCountryOrRegion;");
     return jniEnv->CallStaticObjectMethod(clazz, fromValueId, jCountryOrRegion);
 }
 
-void AIHelpSupport::init(string appKey, string domainName, string appId) {
+void AIHelpSupport::init(const string& appKey, const string& domainName, const string& appId) {
     const char *methodName = "init";
     const char *sig = "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
     cocos2d::JniMethodInfo methodInfo;
     if (cocos2d::JniHelper::getStaticMethodInfo(methodInfo, supportClazzName, methodName, sig)) {
+        jobject jContext = getAndroidContext();
         jstring jAppKey = methodInfo.env->NewStringUTF(appKey.c_str());
         jstring jDomain = methodInfo.env->NewStringUTF(domainName.c_str());
         jstring jAppId = methodInfo.env->NewStringUTF(appId.c_str());
-        methodInfo.env->CallStaticVoidMethod(
-                methodInfo.classID, methodInfo.methodID, cocos2d::JniHelper::getActivity(), jAppKey,
-                jDomain, jAppId);
+        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jContext, jAppKey,jDomain, jAppId);
+        methodInfo.env->DeleteLocalRef(jContext);
         methodInfo.env->DeleteLocalRef(jAppKey);
         methodInfo.env->DeleteLocalRef(jDomain);
         methodInfo.env->DeleteLocalRef(jAppId);
@@ -152,19 +121,19 @@ void AIHelpSupport::init(string appKey, string domainName, string appId) {
     }
 }
 
-void AIHelpSupport::init(string appKey, string domainName, string appId, string language) {
+void AIHelpSupport::init(const string& appKey, const string& domainName, const string& appId, const string& language) {
     const char *sig = "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
     const char *methodName = "init";
     cocos2d::JniMethodInfo methodInfo;
     if (cocos2d::JniHelper::getStaticMethodInfo(methodInfo, supportClazzName, methodName, sig)) {
+        jobject jContext = getAndroidContext();
         jstring jAppKey = methodInfo.env->NewStringUTF(appKey.c_str());
         jstring jDomain = methodInfo.env->NewStringUTF(domainName.c_str());
         jstring jAppId = methodInfo.env->NewStringUTF(appId.c_str());
         jstring jLanguage = methodInfo.env->NewStringUTF(language.c_str());
-        methodInfo.env->CallStaticVoidMethod(
-                methodInfo.classID, methodInfo.methodID, cocos2d::JniHelper::getActivity(), jAppKey,
-                jDomain, jAppId,
-                jLanguage);
+        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID,
+                                             jContext, jAppKey,jDomain, jAppId, jLanguage);
+        methodInfo.env->DeleteLocalRef(jContext);
         methodInfo.env->DeleteLocalRef(jAppKey);
         methodInfo.env->DeleteLocalRef(jDomain);
         methodInfo.env->DeleteLocalRef(jAppId);
@@ -173,122 +142,36 @@ void AIHelpSupport::init(string appKey, string domainName, string appId, string 
     }
 }
 
-void AIHelpSupport::showConversation() {
-    const char *sig = "()V";
+bool AIHelpSupport::show(string entranceId) {
+    const char *sig = "(Ljava/lang/String;)Z";
     cocos2d::JniMethodInfo methodInfo;
-    if (cocos2d::JniHelper::getStaticMethodInfo(methodInfo, supportClazzName, "showConversation",
-                                                sig)) {
-        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID);
+    jboolean jret = JNI_FALSE;
+    if (cocos2d::JniHelper::getStaticMethodInfo(methodInfo, supportClazzName, "show", sig)) {
+        jstring jEntranceId = methodInfo.env->NewStringUTF(entranceId.c_str());
+        jret = methodInfo.env->CallStaticBooleanMethod(methodInfo.classID, methodInfo.methodID, jEntranceId);
         methodInfo.env->DeleteLocalRef(methodInfo.classID);
     }
+    return (jret == JNI_TRUE);
 }
 
-void AIHelpSupport::showConversation(ConversationConfig conversationConfig) {
-    const char *sig = "(Lnet/aihelp/config/ConversationConfig;)V";
+bool AIHelpSupport::show(AIHelpSupportApiConfig apiConfig) {
+    const char *sig = "(Lnet/aihelp/config/ApiConfig;)Z";
     cocos2d::JniMethodInfo info;
-    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "showConversation", sig)) {
-        jobject config = getJavaConversationConfig(conversationConfig);
-        info.env->CallStaticVoidMethod(info.classID, info.methodID, config);
+    jboolean jret = JNI_FALSE;
+    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "show", sig)) {
+        jobject config = getJavaApiConfig(info.env, std::move(apiConfig));
+        jret = info.env->CallStaticBooleanMethod(info.classID, info.methodID, config);
         info.env->DeleteLocalRef(config);
         info.env->DeleteLocalRef(info.classID);
     }
-}
-
-void AIHelpSupport::showAllFAQSections() {
-    const char *sig = "()V";
-    cocos2d::JniMethodInfo methodInfo;
-    if (cocos2d::JniHelper::getStaticMethodInfo(methodInfo, supportClazzName, "showAllFAQSections",
-                                                sig)) {
-        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID);
-        methodInfo.env->DeleteLocalRef(methodInfo.classID);
-    }
-}
-
-void AIHelpSupport::showAllFAQSections(FAQConfig faqConfig) {
-    const char *sig = "(Lnet/aihelp/config/FaqConfig;)V";
-    cocos2d::JniMethodInfo info;
-    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "showAllFAQSections",
-                                                sig)) {
-        jobject config = getJavaFaqConfig(faqConfig);
-        info.env->CallStaticVoidMethod(info.classID, info.methodID, config);
-        info.env->DeleteLocalRef(config);
-        info.env->DeleteLocalRef(info.classID);
-    }
-}
-
-void AIHelpSupport::showFAQSection(string sectionId) {
-    const char *sig = "(Ljava/lang/String;)V";
-    cocos2d::JniMethodInfo info;
-    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "showFAQSection", sig)) {
-        jstring secId = info.env->NewStringUTF(sectionId.c_str());
-        info.env->CallStaticVoidMethod(info.classID, info.methodID, secId);
-        info.env->DeleteLocalRef(secId);
-        info.env->DeleteLocalRef(info.classID);
-    }
-}
-
-void AIHelpSupport::showFAQSection(string sectionId, FAQConfig faqConfig) {
-    const char *sig = "(Ljava/lang/String;Lnet/aihelp/config/FaqConfig;)V";
-    cocos2d::JniMethodInfo info;
-    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "showFAQSection", sig)) {
-        jstring secId = info.env->NewStringUTF(sectionId.c_str());
-        jobject config = getJavaFaqConfig(faqConfig);
-        info.env->CallStaticVoidMethod(info.classID, info.methodID, secId, config);
-        info.env->DeleteLocalRef(secId);
-        info.env->DeleteLocalRef(config);
-        info.env->DeleteLocalRef(info.classID);
-    }
-}
-
-void AIHelpSupport::showSingleFAQ(string faqId) {
-    const char *sig = "(Ljava/lang/String;)V";
-    cocos2d::JniMethodInfo info;
-    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "showSingleFAQ", sig)) {
-        jstring id = info.env->NewStringUTF(faqId.c_str());
-        info.env->CallStaticVoidMethod(info.classID, info.methodID, id);
-        info.env->DeleteLocalRef(id);
-        info.env->DeleteLocalRef(info.classID);
-    }
-}
-
-void AIHelpSupport::showSingleFAQ(string faqId, FAQConfig faqConfig) {
-    const char *sig = "(Ljava/lang/String;Lnet/aihelp/config/FaqConfig;)V";
-    cocos2d::JniMethodInfo info;
-    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "showSingleFAQ", sig)) {
-        jstring id = info.env->NewStringUTF(faqId.c_str());
-        jobject config = getJavaFaqConfig(faqConfig);
-        info.env->CallStaticVoidMethod(info.classID, info.methodID, id, config);
-        info.env->DeleteLocalRef(id);
-        info.env->DeleteLocalRef(config);
-        info.env->DeleteLocalRef(info.classID);
-    }
-}
-
-void AIHelpSupport::showOperation() {
-    const char *sig = "()V";
-    cocos2d::JniMethodInfo info;
-    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "showOperation", sig)) {
-        info.env->CallStaticVoidMethod(info.classID, info.methodID);
-        info.env->DeleteLocalRef(info.classID);
-    }
-}
-
-void AIHelpSupport::showOperation(OperationConfig operationConfig) {
-    const char *sig = "(Lnet/aihelp/config/OperationConfig;)V";
-    cocos2d::JniMethodInfo info;
-    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "showOperation", sig)) {
-        jobject config = getJavaOperationConfig(operationConfig);
-        info.env->CallStaticVoidMethod(info.classID, info.methodID, config);
-        info.env->DeleteLocalRef(config);
-        info.env->DeleteLocalRef(info.classID);
-    }
+    return (jret == JNI_TRUE);
 }
 
 void AIHelpSupport::updateUserInfo(AIHelpSupportUserConfig userConfig) {
     const char *sig = "(Lnet/aihelp/config/UserConfig;)V";
     cocos2d::JniMethodInfo info;
     if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "updateUserInfo", sig)) {
-        jobject config = getJavaUserConfig(userConfig);
+        jobject config = getJavaUserConfig(info.env, std::move(userConfig));
         info.env->CallStaticVoidMethod(info.classID, info.methodID, config);
         info.env->DeleteLocalRef(config);
         info.env->DeleteLocalRef(info.classID);
@@ -303,21 +186,35 @@ void AIHelpSupport::resetUserInfo() {
     }
 }
 
-void AIHelpSupport::updateSDKLanguage(string language) {
-    cocos2d::JniHelper::callStaticVoidMethod(supportClazzName, "updateSDKLanguage", language);
+void AIHelpSupport::updateSDKLanguage(const string& language) {
+    const char *sig = "(Ljava/lang/String;)V";
+    cocos2d::JniMethodInfo info;
+    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "updateSDKLanguage", sig)) {
+        jstring jLanguage = info.env->NewStringUTF(language.c_str());
+        info.env->CallStaticVoidMethod(info.classID, info.methodID, jLanguage);
+        info.env->DeleteLocalRef(info.classID);
+        info.env->DeleteLocalRef(jLanguage);
+    }
 }
 
-void AIHelpSupport::setUploadLogPath(string path) {
-    cocos2d::JniHelper::callStaticVoidMethod(supportClazzName, "setUploadLogPath", path);
+void AIHelpSupport::setUploadLogPath(const string& path) {
+    const char *sig = "(Ljava/lang/String;)V";
+    cocos2d::JniMethodInfo info;
+    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "setUploadLogPath", sig)) {
+        jstring jPath = info.env->NewStringUTF(path.c_str());
+        info.env->CallStaticVoidMethod(info.classID, info.methodID, jPath);
+        info.env->DeleteLocalRef(info.classID);
+        info.env->DeleteLocalRef(jPath);
+    }
 }
 
-void AIHelpSupport::setPushTokenAndPlatform(string pushToken, PushPlatform p) {
+void AIHelpSupport::setPushTokenAndPlatform(const string& pushToken, PushPlatform p) {
     const char *sig = "(Ljava/lang/String;Lnet/aihelp/config/enums/PushPlatform;)V";
     const char *methodName = "setPushTokenAndPlatform";
     cocos2d::JniMethodInfo methodInfo;
     if (cocos2d::JniHelper::getStaticMethodInfo(methodInfo, supportClazzName, methodName, sig)) {
         jstring jPushToken = methodInfo.env->NewStringUTF(pushToken.c_str());
-        jobject jPushPlatform = getJavaPushPlatform(p);
+        jobject jPushPlatform = getJavaPushPlatform(methodInfo.env, p);
         methodInfo.env->CallStaticVoidMethod(
                 methodInfo.classID, methodInfo.methodID, jPushToken, jPushPlatform);
         methodInfo.env->DeleteLocalRef(jPushToken);
@@ -327,11 +224,23 @@ void AIHelpSupport::setPushTokenAndPlatform(string pushToken, PushPlatform p) {
 }
 
 bool AIHelpSupport::isAIHelpShowing() {
-    return cocos2d::JniHelper::callStaticBooleanMethod(supportClazzName, "isAIHelpShowing");
+    const char *sig = "()Z";
+    cocos2d::JniMethodInfo info;
+    jboolean jret = JNI_FALSE;
+    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "setUploadLogPath", sig)) {
+        jret = info.env->CallStaticBooleanMethod(info.classID, info.methodID);
+        info.env->DeleteLocalRef(info.classID);
+    }
+    return (jret == JNI_TRUE);
 }
 
 void AIHelpSupport::enableLogging(bool enable) {
-    cocos2d::JniHelper::callStaticVoidMethod(supportClazzName, "enableLogging", enable);
+    const char *sig = "(Z)V";
+    cocos2d::JniMethodInfo info;
+    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "enableLogging", sig)) {
+        info.env->CallStaticVoidMethod(info.classID, info.methodID, enable);
+        info.env->DeleteLocalRef(info.classID);
+    }
 }
 
 void AIHelpSupport::additionalSupportFor(PublishCountryOrRegion countryOrRegion){
@@ -339,7 +248,7 @@ void AIHelpSupport::additionalSupportFor(PublishCountryOrRegion countryOrRegion)
     const char *methodName = "additionalSupportFor";
     cocos2d::JniMethodInfo methodInfo;
     if (cocos2d::JniHelper::getStaticMethodInfo(methodInfo, supportClazzName, methodName, sig)) {
-        jobject jCountryOrRegion = getJavaPublishCountryOrRegion(countryOrRegion);
+        jobject jCountryOrRegion = getJavaPublishCountryOrRegion(methodInfo.env, countryOrRegion);
         methodInfo.env->CallStaticVoidMethod(
                 methodInfo.classID, methodInfo.methodID, jCountryOrRegion);
         methodInfo.env->DeleteLocalRef(jCountryOrRegion);
@@ -348,11 +257,27 @@ void AIHelpSupport::additionalSupportFor(PublishCountryOrRegion countryOrRegion)
 }
 
 string AIHelpSupport::getSDKVersion() {
-    return cocos2d::JniHelper::callStaticStringMethod(supportClazzName, "getSDKVersion");
+    const char *sig = "()Ljava/lang/String;";
+    cocos2d::JniMethodInfo info;
+    std::string ret;
+    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "getSDKVersion", sig)) {
+        auto jret = (jstring)info.env->CallStaticObjectMethod(info.classID, info.methodID);
+        ret = cocos2d::JniHelper::jstring2string(jret);
+        info.env->DeleteLocalRef(info.classID);
+        info.env->DeleteLocalRef(jret);
+    }
+    return ret;
 }
 
-void AIHelpSupport::showUrl(string url) {
-    cocos2d::JniHelper::callStaticVoidMethod(supportClazzName, "showUrl", url);
+void AIHelpSupport::showUrl(const string& url) {
+    const char *sig = "(Ljava/lang/String;)V";
+    cocos2d::JniMethodInfo info;
+    if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, "showUrl", sig)) {
+        jstring jUrl = info.env->NewStringUTF(url.c_str());
+        info.env->CallStaticVoidMethod(info.classID, info.methodID, jUrl);
+        info.env->DeleteLocalRef(info.classID);
+        info.env->DeleteLocalRef(jUrl);
+    }
 }
 
 void AIHelpSupport::setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback) {
@@ -361,26 +286,24 @@ void AIHelpSupport::setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback c
     const char *sig = "(I[Ljava/lang/Object;)V";
     cocos2d::JniMethodInfo info;
     if (cocos2d::JniHelper::getStaticMethodInfo(info, clazzName, "registerCocos2dxCallback", sig)) {
-        JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
-        jclass clazz = jniEnv->FindClass("java/lang/Object");
-        jobjectArray array = jniEnv->NewObjectArray(5, clazz, 0);
+        jclass clazz = info.env->FindClass("java/lang/Object");
+        jobjectArray array = info.env->NewObjectArray(5, clazz, 0);
         info.env->CallStaticVoidMethod(info.classID, info.methodID, 1001, array);
         info.env->DeleteLocalRef(array);
         info.env->DeleteLocalRef(info.classID);
     }
 }
 
-void AIHelpSupport::setNetworkCheckHostAddress(string address, OnNetworkCheckResultCallback cb) {
+void AIHelpSupport::setNetworkCheckHostAddress(const string& address, OnNetworkCheckResultCallback cb) {
     networkCheckCallBack = cb;
     const char *clazzName = "net/aihelp/init/CallbackHelper";
     const char *sig = "(I[Ljava/lang/Object;)V";
     cocos2d::JniMethodInfo info;
     if (cocos2d::JniHelper::getStaticMethodInfo(info, clazzName, "registerCocos2dxCallback", sig)) {
-        jstring jstr = string2jstring(address);
-        JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
-        jclass clazz = jniEnv->FindClass("java/lang/Object");
-        jobjectArray array = jniEnv->NewObjectArray(5, clazz, 0);
-        jniEnv->SetObjectArrayElement(array, 0, jstr);
+        jstring jstr = string2jstring(info.env, address);
+        jclass clazz = info.env->FindClass("java/lang/Object");
+        jobjectArray array = info.env->NewObjectArray(5, clazz, 0);
+        info.env->SetObjectArrayElement(array, 0, jstr);
         info.env->CallStaticVoidMethod(info.classID, info.methodID, 1002, array);
         info.env->DeleteLocalRef(jstr);
         info.env->DeleteLocalRef(array);
@@ -395,9 +318,8 @@ void AIHelpSupport::startUnreadMessageCountPolling(OnMessageCountArrivedCallback
     const char *sig = "(I[Ljava/lang/Object;)V";
     cocos2d::JniMethodInfo info;
     if (cocos2d::JniHelper::getStaticMethodInfo(info, clazzName, "registerCocos2dxCallback", sig)) {
-        JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
-        jclass clazz = jniEnv->FindClass("java/lang/Object");
-        jobjectArray array = jniEnv->NewObjectArray(5, clazz, 0);
+        jclass clazz = info.env->FindClass("java/lang/Object");
+        jobjectArray array = info.env->NewObjectArray(5, clazz, 0);
         info.env->CallStaticVoidMethod(info.classID, info.methodID, 1003, array);
         info.env->DeleteLocalRef(array);
         info.env->DeleteLocalRef(info.classID);
@@ -410,9 +332,8 @@ void AIHelpSupport::setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCa
     const char *sig = "(I[Ljava/lang/Object;)V";
     cocos2d::JniMethodInfo info;
     if (cocos2d::JniHelper::getStaticMethodInfo(info, clazzName, "registerCocos2dxCallback", sig)) {
-        JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
-        jclass clazz = jniEnv->FindClass("java/lang/Object");
-        jobjectArray array = jniEnv->NewObjectArray(5, clazz, 0);
+        jclass clazz = info.env->FindClass("java/lang/Object");
+        jobjectArray array = info.env->NewObjectArray(5, clazz, 0);
         info.env->CallStaticVoidMethod(info.classID, info.methodID, 1004, array);
         info.env->DeleteLocalRef(array);
         info.env->DeleteLocalRef(info.classID);
@@ -425,9 +346,8 @@ void AIHelpSupport::setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback c
     const char *sig = "(I[Ljava/lang/Object;)V";
     cocos2d::JniMethodInfo info;
     if (cocos2d::JniHelper::getStaticMethodInfo(info, clazzName, "registerCocos2dxCallback", sig)) {
-        JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
-        jclass clazz = jniEnv->FindClass("java/lang/Object");
-        jobjectArray array = jniEnv->NewObjectArray(5, clazz, 0);
+        jclass clazz = info.env->FindClass("java/lang/Object");
+        jobjectArray array = info.env->NewObjectArray(5, clazz, 0);
         info.env->CallStaticVoidMethod(info.classID, info.methodID, 1005, array);
         info.env->DeleteLocalRef(array);
         info.env->DeleteLocalRef(info.classID);
@@ -440,25 +360,23 @@ void AIHelpSupport::setOnAIHelpSessionCloseCallback(OnAIHelpSessionCloseCallback
     const char *sig = "(I[Ljava/lang/Object;)V";
     cocos2d::JniMethodInfo info;
     if (cocos2d::JniHelper::getStaticMethodInfo(info, clazzName, "registerCocos2dxCallback", sig)) {
-        JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
-        jclass clazz = jniEnv->FindClass("java/lang/Object");
-        jobjectArray array = jniEnv->NewObjectArray(5, clazz, 0);
+        jclass clazz = info.env->FindClass("java/lang/Object");
+        jobjectArray array = info.env->NewObjectArray(5, clazz, 0);
         info.env->CallStaticVoidMethod(info.classID, info.methodID, 1006, array);
         info.env->DeleteLocalRef(array);
         info.env->DeleteLocalRef(info.classID);
     }
 }
 
-void AIHelpSupport::setOnAIHelpOperationUnreadChangedCallback(OnAIHelpOperationUnreadCallback callback) {
-    operationUnreadCallback = callback;
+void AIHelpSupport::setOnAIHelpSpecificUrlClickedCallback(OnAIHelpSpecificUrlClickedCallback callback) {
+    specificUrlClickedCallback = callback;
     const char *clazzName = "net/aihelp/init/CallbackHelper";
     const char *sig = "(I[Ljava/lang/Object;)V";
     cocos2d::JniMethodInfo info;
     if (cocos2d::JniHelper::getStaticMethodInfo(info, clazzName, "registerCocos2dxCallback", sig)) {
-        JNIEnv *jniEnv = cocos2d::JniHelper::getEnv();
-        jclass clazz = jniEnv->FindClass("java/lang/Object");
-        jobjectArray array = jniEnv->NewObjectArray(5, clazz, 0);
-        info.env->CallStaticVoidMethod(info.classID, info.methodID, 1007, array);
+        jclass clazz = info.env->FindClass("java/lang/Object");
+        jobjectArray array = info.env->NewObjectArray(5, clazz, 0);
+        info.env->CallStaticVoidMethod(info.classID, info.methodID, 1008, array);
         info.env->DeleteLocalRef(array);
         info.env->DeleteLocalRef(info.classID);
     }
@@ -478,34 +396,37 @@ JNIEXPORT void JNICALL Java_net_aihelp_init_CallbackHelper_handleCocos2dxCallbac
     } else {
         jobject element = jniEnv->GetObjectArrayElement(objArray, 0);
         if (type == 1002 && networkCheckCallBack) {
-            jstring netLog = NULL;
-            const char *result = NULL;
+            jstring netLog = nullptr;
+            const char *result = nullptr;
             if (jniEnv->IsInstanceOf(element, jniEnv->FindClass("java/lang/String"))) {
                 netLog = static_cast<jstring>(element);
                 result = jniEnv->GetStringUTFChars(netLog, 0);
             }
             networkCheckCallBack(result);
-            if (netLog != NULL) {
+            if (netLog != nullptr) {
                 jniEnv->ReleaseStringUTFChars(netLog, result);
             }
         }
         if (type == 1003 && unreadMsgCallback) {
             jclass cls = jniEnv->GetObjectClass(element);
-            jint result = 0;
+            int result = 0;
             if (jniEnv->IsInstanceOf(element, jniEnv->FindClass("java/lang/Integer"))) {
                 jmethodID intValueMethodID = jniEnv->GetMethodID(cls, "intValue", "()I");
                 result = jniEnv->CallIntMethod(element, intValueMethodID);
             }
             unreadMsgCallback(result);
         }
-        if (type == 1007 && operationUnreadCallback) {
-            jclass cls = jniEnv->GetObjectClass(element);
-            jboolean result = false;
-            if (jniEnv->IsInstanceOf(element, jniEnv->FindClass("java/lang/Boolean"))) {
-                jmethodID intValueMethodID = jniEnv->GetMethodID(cls, "booleanValue", "()Z");
-                result = jniEnv->CallBooleanMethod(element, intValueMethodID);
+        if (type == 1008 && specificUrlClickedCallback) {
+            jstring url = nullptr;
+            const char *result = nullptr;
+            if (jniEnv->IsInstanceOf(element, jniEnv->FindClass("java/lang/String"))) {
+                url = static_cast<jstring>(element);
+                result = jniEnv->GetStringUTFChars(url, 0);
             }
-            operationUnreadCallback(result);
+            specificUrlClickedCallback(result);
+            if (url != nullptr) {
+                jniEnv->ReleaseStringUTFChars(url, result);
+            }
         }
     }
 

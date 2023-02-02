@@ -7,118 +7,33 @@
 #include "AIHelpConfig.h"
 USING_NS_CC;
 
-/* ConversationConfig */
-ConversationConfig::ConversationConfig(bool alwaysShowHumanSupportButtonInBotPage, string welcomeMessage, string storyNode, ConversationIntent conversationIntent)
-    :alwaysShowHumanSupportButtonInBotPage(alwaysShowHumanSupportButtonInBotPage),
-    welcomeMessage(welcomeMessage),
-    storyNode(storyNode),
-    conversationIntent(conversationIntent){
+/* AIHelpSupportApiConfig */
+AIHelpSupportApiConfig::AIHelpSupportApiConfig(string entranceId, string welcomeMessage)
+        :entranceId(entranceId),
+         welcomeMessage(welcomeMessage){
 }
-bool ConversationConfig::getAlwaysShowHumanSupportButtonInBotPage() {
-    return alwaysShowHumanSupportButtonInBotPage;
+string AIHelpSupportApiConfig::getEntranceId() {
+    return entranceId;
 }
-string ConversationConfig::getWelcomeMessage() {
+string AIHelpSupportApiConfig::getWelcomeMessage() {
     return welcomeMessage;
 }
-string ConversationConfig::getStoryNode() {
-    return storyNode;
-}
-ConversationIntent ConversationConfig::getConversationIntent() {
-    return conversationIntent;
-}
 
-/* ConversationConfigBuilder */
-ConversationConfigBuilder::ConversationConfigBuilder(const ConversationConfigBuilder& rBuilder){
-    this->alwaysShowHumanSupportButtonInBotPage = rBuilder.alwaysShowHumanSupportButtonInBotPage;
+/* AIHelpSupportApiConfigBuilder */
+AIHelpSupportApiConfigBuilder::AIHelpSupportApiConfigBuilder(const AIHelpSupportApiConfigBuilder& rBuilder){
+    this->entranceId = rBuilder.entranceId;
     this->welcomeMessage = rBuilder.welcomeMessage;
-    this->storyNode = rBuilder.storyNode;
-    this->conversationIntent = rBuilder.conversationIntent;
 }
-ConversationConfigBuilder ConversationConfigBuilder::setAlwaysShowHumanSupportButtonInBotPage(bool alwaysShowHumanSupportButtonInBotPage) {
-    (*this).alwaysShowHumanSupportButtonInBotPage = alwaysShowHumanSupportButtonInBotPage;
+AIHelpSupportApiConfigBuilder AIHelpSupportApiConfigBuilder::setEntranceId(string entranceId) {
+    (*this).entranceId = entranceId;
     return (*this);
 }
-ConversationConfigBuilder ConversationConfigBuilder::setWelcomeMessage(string welcomeMessage) {
+AIHelpSupportApiConfigBuilder AIHelpSupportApiConfigBuilder::setWelcomeMessage(string welcomeMessage) {
     (*this).welcomeMessage = welcomeMessage;
     return (*this);
 }
-ConversationConfigBuilder ConversationConfigBuilder::setStoryNode(string storyNode) {
-    (*this).storyNode = storyNode;
-    return (*this);
-}
-ConversationConfigBuilder ConversationConfigBuilder::setConversationIntent(ConversationIntent conversationIntent) {
-    (*this).conversationIntent = conversationIntent;
-    return (*this);
-}
-ConversationConfig ConversationConfigBuilder::build() {
-    return ConversationConfig(alwaysShowHumanSupportButtonInBotPage, welcomeMessage, storyNode, conversationIntent);
-}
-
-
-/* FAQConfig */
-FAQConfig::FAQConfig(ConversationMoment showConversationMoment, const ConversationConfig& conversationConfig) :showConversationMoment(showConversationMoment),
-    conversationConfig(conversationConfig){
-}
-ConversationMoment FAQConfig::getShowConversationMoment() {
-    return showConversationMoment;
-}
-const ConversationConfig& FAQConfig::getConversationConfig() {
-    return conversationConfig;
-}
-
-/* FAQConfigBuilder */
-FAQConfigBuilder::FAQConfigBuilder(const FAQConfigBuilder& rBuilder){
-    this->showConversationMoment = rBuilder.showConversationMoment;
-    this->conversationConfig = rBuilder.conversationConfig;
-}
-FAQConfigBuilder FAQConfigBuilder::setShowConversationMoment(ConversationMoment showConversationMoment) {
-    (*this).showConversationMoment = showConversationMoment;
-    return (*this);
-}
-FAQConfigBuilder FAQConfigBuilder::setConversationConfig(const ConversationConfig& conversationConfig) {
-    (*this).conversationConfig = conversationConfig;
-    return (*this);
-}
-FAQConfig FAQConfigBuilder::build() {
-    return FAQConfig(showConversationMoment, conversationConfig);
-}
-
-
-/* OperationConfig */
-OperationConfig::OperationConfig(int selectIndex, string conversationBotTitle, const ConversationConfig& conversationConfig) :selectIndex(selectIndex),
-    conversationTitle(conversationBotTitle),
-    conversationConfig(conversationConfig){
-}
-int OperationConfig::getSelectIndex() {
-    return selectIndex;
-}
-string OperationConfig::getConversationTitle() {
-    return conversationTitle;
-}
-const ConversationConfig& OperationConfig::getConversationConfig() {
-    return conversationConfig;
-}
-
-/* OperationConfigBuilder */
-OperationConfigBuilder::OperationConfigBuilder(const OperationConfigBuilder& rBuilder){
-    this->selectIndex = rBuilder.selectIndex;
-    this->conversationTitle = rBuilder.conversationTitle;
-    this->conversationConfig = rBuilder.conversationConfig;
-}
-OperationConfigBuilder OperationConfigBuilder::setSelectIndex(int selectIndex) {
-    (*this).selectIndex = selectIndex;
-    return (*this);
-}
-OperationConfigBuilder OperationConfigBuilder::setConversationTitle(string conversationBotTitle) {
-    (*this).conversationTitle = conversationBotTitle;
-    return (*this);
-}
-OperationConfigBuilder OperationConfigBuilder::setConversationConfig(const ConversationConfig& conversationConfig) {
-    (*this).conversationConfig = conversationConfig;
-    return (*this);
-}
-OperationConfig OperationConfigBuilder::build() {
-    return OperationConfig(selectIndex, conversationTitle, conversationConfig);
+AIHelpSupportApiConfig AIHelpSupportApiConfigBuilder::build() {
+    return AIHelpSupportApiConfig(entranceId, welcomeMessage);
 }
 
 

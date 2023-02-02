@@ -80,7 +80,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
             "zh_CN");
     AIHelpSupport::setOnAIHelpInitializedCallback(AIHelp_onAIHelpInit);
     AIHelpSupport::setOnSpecificFormSubmittedCallback(AIHelp_onFormSubmitted);
-    AIHelpSupport::setOnAIHelpOperationUnreadChangedCallback(AIHelp_onOperationUnreadChanged);
 
     return true;
 }

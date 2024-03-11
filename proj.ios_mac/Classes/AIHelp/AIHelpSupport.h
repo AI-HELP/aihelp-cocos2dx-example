@@ -18,6 +18,7 @@ typedef void (*OnMessageCountArrivedCallback)(const int unreadCount);
 typedef void (*OnSpecificFormSubmittedCallback)(void);
 typedef void (*OnAIHelpSessionOpenCallback)(void);
 typedef void (*OnAIHelpSessionCloseCallback)(void);
+typedef void (*OnAIHelpOperationUnreadCallback)(const bool hasUnread);
 typedef void (*OnAIHelpSpecificUrlClickedCallback)(const char* url);
 
 class AIHelpSupport
@@ -25,13 +26,24 @@ class AIHelpSupport
 public:
     static void init(const string& apiKey, const string& domainName, const string& appId);
     static void init(const string& apiKey, const string& domainName, const string& appId, const string& language);
-    
-    static bool show(string entranceId);
-    static bool show(AIHelpSupportApiConfig apiConfig);
+
+    static void showConversation();
+    static void showConversation(ConversationConfig conversationConfig);
+
+    static void showAllFAQSections();
+    static void showAllFAQSections(FAQConfig faqConfig);
+
+    static void showFAQSection(const string& sectionId);
+    static void showFAQSection(const string& sectionId, FAQConfig faqConfig);
+    static void showSingleFAQ(const string& faqId);
+    static void showSingleFAQ(const string& faqId, FAQConfig faqConfig);
+
+    static void showOperation();
+    static void showOperation(OperationConfig operationConfig);
 
     static void updateUserInfo(AIHelpSupportUserConfig userConfig);
     static void resetUserInfo();
-    
+
     static void updateSDKLanguage(const string& language);
     static void setUploadLogPath(const string& path);
     static void setPushTokenAndPlatform(const string& pushToken, PushPlatform platform);
@@ -47,6 +59,7 @@ public:
     static void setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCallback callback);
     static void setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback callback);
     static void setOnAIHelpSessionCloseCallback(OnAIHelpSessionCloseCallback callback);
+    static void setOnAIHelpOperationUnreadChangedCallback(OnAIHelpOperationUnreadCallback callback);
     static void setOnAIHelpSpecificUrlClickedCallback(OnAIHelpSpecificUrlClickedCallback callback);
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)

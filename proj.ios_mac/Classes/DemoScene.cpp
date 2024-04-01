@@ -1,5 +1,6 @@
 #include "DemoScene.h"
-#include "AIHelpSupport.h"
+#include "AIHelp/AIHelpSupport.h"
+#include "AIHelp/AIHelpConfig.h"
 
 USING_NS_CC;
 
@@ -13,7 +14,7 @@ cocos2d::Scene *GameScene::createScene() {
 bool GameScene::init() {
     if (!Layer::init())
         return false;
-    
+
 //	auto BGColor = LayerColor::create(Color4B(211, 211, 211, 255));
 //	this->addChild(BGColor);
 
@@ -38,9 +39,9 @@ bool GameScene::init() {
     otherTitle->setColor(titleColor);
     addChild(otherTitle);
 
-//    auto logo = Sprite::create("logo.png");
-//    logo->setPosition(Vec2(450, 160));
-//    this->addChild(logo, 0);
+    auto logo = Sprite::create("logo.png");
+    logo->setPosition(Vec2(450, 160));
+    this->addChild(logo, 0);
 
     // ================================= Modules =================================
 
@@ -69,11 +70,6 @@ bool GameScene::init() {
                                                   CC_CALLBACK_1(GameScene::showSingleFAQ, this));
     menuItemSingleFAQ->setPosition(Vec2(150, 170));
     menuItemSingleFAQ->setColor(Color3B(51, 51, 51));
-
-    auto menuItemOperation = MenuItemFont::create("Operation",
-                                                  CC_CALLBACK_1(GameScene::showOperation, this));
-    menuItemOperation->setPosition(Vec2(150, 100));
-    menuItemOperation->setColor(Color3B(51, 51, 51));
 
     // ================================= Modules =================================
 
@@ -130,13 +126,11 @@ bool GameScene::init() {
                                                 CC_CALLBACK_1(GameScene::getSDKVersion, this));
     menuItemVersion->setPosition(Vec2(750, 100));
     menuItemVersion->setColor(Color3B(51, 51, 51));
-    
-    
 
     // ================================= Configuration =================================
 
     auto menu = Menu::create(menuItemBot, menuItemManual, menuItemAllSections, menuItemSingle,
-                             menuItemSingleFAQ, menuItemOperation, menuItemLogin, menuItemLogout,
+                             menuItemSingleFAQ, menuItemLogin, menuItemLogout,
                              goInternational,
                              menuItemUnread, menuItemPush, menuItemNetCheck, menuItemUploadLog,
                              menuItemLog, menuItemVersion, NULL);
@@ -149,70 +143,26 @@ bool GameScene::init() {
 // ================================= Modules =================================
 
 void GameScene::showBotSupport(cocos2d::Ref *obj) {
-    ConversationConfig config = ConversationConfigBuilder()
-            .setConversationIntent(BOT_SUPPORT)
-            .setAlwaysShowHumanSupportButtonInBotPage(true)
-            .build();
-    AIHelpSupport::showConversation(config);
+    AIHelpSupport::show("test004");
 }
 
 void GameScene::showManualSupport(cocos2d::Ref *obj) {
-    ConversationConfig config = ConversationConfigBuilder()
-            .setConversationIntent(HUMAN_SUPPORT)
-            .setWelcomeMessage(
-                    "You can configure special welcome message for your end users at here.")
-            .build();
-    AIHelpSupport::showConversation(config);
+    AIHelpSupportApiConfig apiConfig = AIHelpSupportApiConfigBuilder()
+            .setEntranceId("THIS IS YOUR ENTRANCE ID")
+            .setWelcomeMessage("THIS IS YOUR WELCOME MESSAGE").build();
+    AIHelpSupport::show(apiConfig);
 }
 
 void GameScene::showAllFAQSections(cocos2d::Ref *obj) {
-    ConversationConfig faqConversationConfig = ConversationConfigBuilder()
-            .setConversationIntent(BOT_SUPPORT)
-            .setAlwaysShowHumanSupportButtonInBotPage(true)
-            .setWelcomeMessage("This is special configured welcome message for FAQ entrance.")
-            .build();
-    FAQConfig config = FAQConfigBuilder()
-            .setShowConversationMoment(ALWAYS)
-            .setConversationConfig(faqConversationConfig)
-            .build();
-    AIHelpSupport::showAllFAQSections(config);
+    AIHelpSupport::show("test001");
 }
 
 void GameScene::showSingleSection(cocos2d::Ref *obj) {
-    ConversationConfig faqConversationConfig = ConversationConfigBuilder()
-            .setConversationIntent(HUMAN_SUPPORT)
-            .setWelcomeMessage("Hi, there, is there anything I can do for you?")
-            .build();
-    FAQConfig config = FAQConfigBuilder()
-            .setShowConversationMoment(AFTER_MARKING_UNHELPFUL)
-            .setConversationConfig(faqConversationConfig)
-            .build();
-    AIHelpSupport::showFAQSection("Section ID", config);
+    AIHelpSupport::show("test002");
 }
 
 void GameScene::showSingleFAQ(cocos2d::Ref *obj) {
-    ConversationConfig faqConversationConfig = ConversationConfigBuilder()
-            .setConversationIntent(HUMAN_SUPPORT)
-            .setWelcomeMessage("Hi, there, is there anything I can do for you?")
-            .build();
-    FAQConfig config = FAQConfigBuilder()
-            .setShowConversationMoment(ALWAYS)
-            .setConversationConfig(faqConversationConfig)
-            .build();
-    AIHelpSupport::showSingleFAQ("FAQ ID", config);
-}
-
-void GameScene::showOperation(cocos2d::Ref *obj) {
-    ConversationConfig operationConversationConfig = ConversationConfigBuilder()
-            .setAlwaysShowHumanSupportButtonInBotPage(true)
-            .setWelcomeMessage("This is special configured welcome message for operation entrance.")
-            .build();
-    OperationConfig config = OperationConfigBuilder()
-            .setConversationTitle("Hi, there")
-            .setSelectIndex(2)
-            .setConversationConfig(operationConversationConfig)
-            .build();
-    AIHelpSupport::showOperation(config);
+    AIHelpSupport::show("test003");
 }
 
 // ================================= Modules =================================
@@ -237,7 +187,6 @@ void GameScene::resetUserInfo(cocos2d::Ref *obj) {
 
 void GameScene::updateLanguage(cocos2d::Ref *obj) {
     AIHelpSupport::updateSDKLanguage("ja");
-    
 }
 
 // ================================= Configuration =================================

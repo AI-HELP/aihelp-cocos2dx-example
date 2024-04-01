@@ -7,14 +7,12 @@ USING_NS_CC;
 AppDelegate::AppDelegate() {
 }
 
-AppDelegate::~AppDelegate() 
-{
+AppDelegate::~AppDelegate() {
 }
 
 //if you want a different context,just modify the value of glContextAttrs
 //it will takes effect on all platforms
-void AppDelegate::initGLContextAttrs()
-{
+void AppDelegate::initGLContextAttrs() {
     //set OpenGL context attributions,now can only set six attributions:
     //red,green,blue,alpha,depth,stencil
     GLContextAttrs glContextAttrs = {8, 8, 8, 8, 24, 8};
@@ -22,8 +20,8 @@ void AppDelegate::initGLContextAttrs()
     GLView::setGLContextAttrs(glContextAttrs);
 }
 
-static void AIHelp_onAIHelpInit() {
-    CCLOG("AIHelp Cocos2dx Callback init complete");
+void AIHelp_onAIHelpInit(bool isSuccess, const char *message) {
+    CCLOG("AIHelp Cocos2dx Callback init complete, %d", isSuccess);
 }
 
 static void AIHelp_onFormSubmitted() {
@@ -43,11 +41,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
-    if(!glview) {
+    if (!glview) {
         glview = GLViewImpl::createWithRect("AIHelp Demo", Rect(0, 0, 900, 600));
         director->setOpenGLView(glview);
     }
-    
+
     director->getOpenGLView()->setDesignResolutionSize(900, 600, ResolutionPolicy::SHOW_ALL);
 
     // turn on display FPS
@@ -63,7 +61,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // run
     director->runWithScene(scene);
-    
+
     // init AIHelp
     AIHelpSupport::enableLogging(true);
 //    AIHelpSupport::init(

@@ -24,7 +24,9 @@
  ****************************************************************************/
 package org.cocos2dx.cpp;
 
+import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.projection.MediaProjection;
@@ -46,10 +48,18 @@ import android.widget.Toast;
 
 public class AppActivity extends Cocos2dxActivity {
 
+    private static AppActivity sAppActivity = null;
+
+    public static AppActivity getAppActivity() {
+        return sAppActivity;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.setEnableVirtualButton(false);
         super.onCreate(savedInstanceState);
+
+        sAppActivity = this;
 
         // Workaround in https://stackoverflow.com/questions/16283079/re-launch-of-activity-on-home-button-but-only-the-first-time/16447508
         if (!isTaskRoot()) {
@@ -62,11 +72,12 @@ public class AppActivity extends Cocos2dxActivity {
         // Make sure we're running on Pie or higher to change cutout mode
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             // Enable rendering into the cutout area
-            WindowManager.LayoutParams lp = getWindow().getAttributes();
-            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            LayoutParams lp = getWindow().getAttributes();
+            lp.layoutInDisplayCutoutMode = LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
             getWindow().setAttributes(lp);
         }
         // DO OTHER INITIALIZATION BELOW
+
 
     }
 

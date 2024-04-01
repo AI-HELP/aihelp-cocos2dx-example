@@ -20,7 +20,6 @@ public:
 	void showAllFAQSections(cocos2d::Ref *obj);
 	void showSingleSection(cocos2d::Ref *obj);
 	void showSingleFAQ(cocos2d::Ref *obj);
-	void showOperation(cocos2d::Ref *obj);
 
 	// configuration
 	void updateUserInfo(Ref *obj);

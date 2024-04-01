@@ -18,9 +18,9 @@ static OnAIHelpSessionOpenCallback s_theAIhelpOnAIHelpSessionOpenCallback = NULL
 static OnAIHelpSessionCloseCallback s_theAIhelpOnAIHelpSessionCloseCallback = NULL;
 static OnAIHelpSpecificUrlClickedCallback s_theAIHelpSpecificUrlClickedCallback = NULL;
 
-static void AIHelp_onNetworkCheckFinish(const NSString * log) {
+static void AIHelp_onNetworkCheckFinish(const char * log) {
     if(s_theAIhelpNetworkCheckCallBack && log != nil) {
-        s_theAIhelpNetworkCheckCallBack([log UTF8String]);
+        s_theAIhelpNetworkCheckCallBack(log);
     }
 }
 
@@ -277,8 +277,7 @@ void AIHelpSupport::setSDKInterfaceOrientationMask(int interfaceOrientationMask)
 
 void AIHelpSupport::setNetworkCheckHostAddress(const string& address, OnNetworkCheckResultCallback callback) {
     NSString *nsaddress = AIHelpParseCString(address.c_str());
-    s_theAIhelpNetworkCheckCallBack = callback;
-    [AIHelpSupportSDK setNetworkCheckHostAddress:nsaddress callback:s_theAIhelpNetworkCheckCallBack];
+    [AIHelpSupportSDK setNetworkCheckHostAddress:nsaddress callback:callback];
 }
 
 void AIHelpSupport::setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback) {

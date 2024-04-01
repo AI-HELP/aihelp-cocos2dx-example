@@ -18,9 +18,9 @@ static OnAIHelpSessionOpenCallback s_theAIhelpOnAIHelpSessionOpenCallback = NULL
 static OnAIHelpSessionCloseCallback s_theAIhelpOnAIHelpSessionCloseCallback = NULL;
 static OnAIHelpSpecificUrlClickedCallback s_theAIHelpSpecificUrlClickedCallback = NULL;
 
-static void AIHelp_onNetworkCheckFinish(const NSString * log) {
+static void AIHelp_onNetworkCheckFinish(const char * log) {
     if(s_theAIhelpNetworkCheckCallBack && log != nil) {
-        s_theAIhelpNetworkCheckCallBack([log UTF8String]);
+        s_theAIhelpNetworkCheckCallBack(log);
     }
 }
 

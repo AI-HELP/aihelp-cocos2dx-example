@@ -12,6 +12,7 @@
 
 static OnNetworkCheckResultCallback s_theAIhelpNetworkCheckCallBack = NULL;
 static OnAIHelpInitializedCallback s_theAIhelpInitCallBack = NULL;
+static OnAIHelpInitializedCallback s_theAIhelpInitAsyncCallBack = NULL;
 static OnMessageCountArrivedCallback s_theAIhelpUnreadMessageCallBack = NULL;
 static OnSpecificFormSubmittedCallback s_theAIhelpSpecificFormSubmittedCallback = NULL;
 static OnAIHelpSessionOpenCallback s_theAIhelpOnAIHelpSessionOpenCallback = NULL;
@@ -27,6 +28,12 @@ static void AIHelp_onNetworkCheckFinish(const char * log) {
 static void AIHelp_onAIHelpInit(const bool isSuccess, const char * message) {
     if(s_theAIhelpInitCallBack && message != nil) {
         s_theAIhelpInitCallBack(isSuccess, message);
+    }
+}
+
+static void AIHelp_onAIHelpInitAsync(const bool isSuccess, const char * message) {
+    if(s_theAIhelpInitAsyncCallBack && message != nil) {
+        s_theAIhelpInitAsyncCallBack(isSuccess, message);
     }
 }
 
@@ -174,6 +181,11 @@ void AIHelpSupport::setNetworkCheckHostAddress(const string& address, OnNetworkC
 void AIHelpSupport::setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback) {
     s_theAIhelpInitCallBack = callback;
     [AIHelpSupportSDK setOnInitializedCallback:AIHelp_onAIHelpInit];
+}
+
+void AIHelpSupport::setOnAIHelpInitializedAsyncCallback(OnAIHelpInitializedCallback callback) {
+    s_theAIhelpInitAsyncCallBack = callback;
+    [AIHelpSupportSDK setOnInitializedAsyncCallback:AIHelp_onAIHelpInitAsync];
 }
 
 void AIHelpSupport::startUnreadMessageCountPolling(OnMessageCountArrivedCallback callback) {

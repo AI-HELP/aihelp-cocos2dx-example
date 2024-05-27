@@ -43,6 +43,7 @@ public:
 
     static void setNetworkCheckHostAddress(const string& address, OnNetworkCheckResultCallback callback);
     static void setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback);
+    static void setOnAIHelpInitializedAsyncCallback(OnAIHelpInitializedCallback callback);
     static void startUnreadMessageCountPolling(OnMessageCountArrivedCallback callback);
     static void setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCallback callback);
     static void setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback callback);

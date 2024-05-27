@@ -24,6 +24,10 @@ void AIHelp_onAIHelpInit(bool isSuccess, const char *message) {
     CCLOG("AIHelp Cocos2dx Callback init complete, %d", isSuccess);
 }
 
+void AIHelp_onAIHelpInitAsync(bool isSuccess, const char *message) {
+    CCLOG("AIHelp Cocos2dx Async Callback init complete, %d", isSuccess);
+}
+
 static void AIHelp_onFormSubmitted() {
     CCLOG("AIHelp Cocos2dx Callback onFormSubmitted");
 }
@@ -77,6 +81,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
             "TryElva_platform_79453658-02b7-42fb-9384-8e8712539777",
             "zh_CN");
     AIHelpSupport::setOnAIHelpInitializedCallback(AIHelp_onAIHelpInit);
+    AIHelpSupport::setOnAIHelpInitializedAsyncCallback(AIHelp_onAIHelpInitAsync);
     AIHelpSupport::setOnSpecificFormSubmittedCallback(AIHelp_onFormSubmitted);
 
     return true;

@@ -11,6 +11,7 @@
 const char *supportClazzName = "net/aihelp/init/AIHelpSupport";
 
 OnAIHelpInitializedCallback initCallBack = nullptr;
+OnAIHelpInitializedAsyncCallback initAsyncCallBack = nullptr;
 OnNetworkCheckResultCallback networkCheckCallBack = nullptr;
 OnMessageCountArrivedCallback unreadMsgCallback = nullptr;
 OnSpecificFormSubmittedCallback formSubmittedCallback = nullptr;
@@ -143,7 +144,7 @@ void AIHelpSupport::init(const string &appKey, const string &domainName, const s
     }
 }
 
-bool AIHelpSupport::show(const string& entranceId) {
+bool AIHelpSupport::show(const string &entranceId) {
     const char *sig = "(Ljava/lang/String;)Z";
     cocos2d::JniMethodInfo methodInfo;
     jboolean jret = JNI_FALSE;
@@ -281,6 +282,20 @@ void AIHelpSupport::showUrl(const string &url) {
     }
 }
 
+void AIHelpSupport::setOnAIHelpInitializedAsyncCallback(OnAIHelpInitializedAsyncCallback callback) {
+    initAsyncCallBack = callback;
+    const char *clazzName = "net/aihelp/init/CallbackHelper";
+    const char *sig = "(I[Ljava/lang/Object;)V";
+    cocos2d::JniMethodInfo info;
+    if (cocos2d::JniHelper::getStaticMethodInfo(info, clazzName, "registerCocos2dxCallback", sig)) {
+        jclass clazz = info.env->FindClass("java/lang/Object");
+        jobjectArray array = info.env->NewObjectArray(5, clazz, 0);
+        info.env->CallStaticVoidMethod(info.classID, info.methodID, 1000, array);
+        info.env->DeleteLocalRef(array);
+        info.env->DeleteLocalRef(info.classID);
+    }
+}
+
 void AIHelpSupport::setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback) {
     initCallBack = callback;
     const char *clazzName = "net/aihelp/init/CallbackHelper";
@@ -386,7 +401,7 @@ void AIHelpSupport::setOnAIHelpSpecificUrlClickedCallback(OnAIHelpSpecificUrlCli
 extern "C" {
 JNIEXPORT void JNICALL Java_net_aihelp_init_CallbackHelper_handleCocos2dxCallback
         (JNIEnv *jniEnv, jclass clazz, jint type, jobjectArray objArray) {
-    if (type == 1001 && initCallBack) {
+    if (type == 1000 || type == 1001) {
         jboolean isSuccess = JNI_FALSE;
         const char *message = nullptr;
         if (objArray != nullptr && jniEnv->GetArrayLength(objArray) >= 2) {
@@ -403,7 +418,13 @@ JNIEXPORT void JNICALL Java_net_aihelp_init_CallbackHelper_handleCocos2dxCallbac
                 message = jniEnv->GetStringUTFChars(static_cast<jstring>(messageObj), nullptr);
             }
             // Calling the callback function with extracted parameters
-            initCallBack(isSuccess == JNI_TRUE, message);
+            if (type == 1000 && initAsyncCallBack) {
+                initAsyncCallBack(isSuccess == JNI_TRUE, message);
+            }
+
+            if (type == 1001 && initCallBack) {
+                initCallBack(isSuccess == JNI_TRUE, message);
+            }
 
             // Release the message string if it's not nullptr
             if (message != nullptr) {

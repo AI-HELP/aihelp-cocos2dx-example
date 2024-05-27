@@ -13,6 +13,7 @@
 using namespace std;
 
 typedef void (*OnAIHelpInitializedCallback)(bool isSuccess, const char* message);
+typedef void (*OnAIHelpInitializedAsyncCallback)(bool isSuccess, const char* message);
 typedef void (*OnNetworkCheckResultCallback)(const char* net_log);
 typedef void (*OnMessageCountArrivedCallback)(const int unreadCount);
 typedef void (*OnSpecificFormSubmittedCallback)(void);
@@ -43,6 +44,7 @@ public:
 
     static void setNetworkCheckHostAddress(const string& address, OnNetworkCheckResultCallback callback);
     static void setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback);
+    static void setOnAIHelpInitializedAsyncCallback(OnAIHelpInitializedAsyncCallback callback);
     static void startUnreadMessageCountPolling(OnMessageCountArrivedCallback callback);
     static void setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCallback callback);
     static void setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback callback);

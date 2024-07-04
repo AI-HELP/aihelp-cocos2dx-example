@@ -29,7 +29,6 @@ public:
 	// others
 	void startUnreadMessageCountPolling(Ref *obj);
 	void setPushTokenAndPlatform(Ref *obj);
-	void setNetworkCheckHostAddress(Ref *obj);
 	void setUploadLogPath(Ref *obj);
 	void enableLogging(Ref *obj);
 	void getSDKVersion(Ref *obj);

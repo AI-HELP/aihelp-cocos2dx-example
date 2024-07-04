@@ -1,61 +1,70 @@
-//
-//  AIHelpSupport.h
-//  Cocos2dx SDK
-//
-
 #ifndef AIHelpSupport_h
 #define AIHelpSupport_h
 
 #include "cocos2d.h"
 #include <string>
-#include "AIHelpConfig.h"
+#include "config/Enums.h"
+#include "config/Callbacks.h"
+#include "config/ApiConfig.h"
+#include "config/UserConfig.h"
+#include "config/LoginConfig.h"
 
-using namespace std;
+namespace AIHelp {
+    class AIHelpSupport {
+    public:
+        static void
+        initialize(const std::string &domainName, const std::string &appId, const std::string &language = "");
 
-typedef void (*OnAIHelpInitializedCallback)(bool isSuccess, const char* message);
-typedef void (*OnNetworkCheckResultCallback)(const char* net_log);
-typedef void (*OnMessageCountArrivedCallback)(const int unreadCount);
-typedef void (*OnSpecificFormSubmittedCallback)(void);
-typedef void (*OnAIHelpSessionOpenCallback)(void);
-typedef void (*OnAIHelpSessionCloseCallback)(void);
-typedef void (*OnAIHelpSpecificUrlClickedCallback)(const char* url);
+        static bool show(const std::string &entranceId);
 
-class AIHelpSupport
-{
-public:
-    static void init(const string& apiKey, const string& domainName, const string& appId);
-    static void init(const string& apiKey, const string& domainName, const string& appId, const string& language);
-    
-    static bool show(const string& entranceId);
-    static bool show(AIHelpSupportApiConfig apiConfig);
+        static bool show(ApiConfig apiConfig);
 
-    static void updateUserInfo(AIHelpSupportUserConfig userConfig);
-    static void resetUserInfo();
-    
-    static void updateSDKLanguage(const string& language);
-    static void setUploadLogPath(const string& path);
-    static void setPushTokenAndPlatform(const string& pushToken, PushPlatform platform);
-    static string getSDKVersion();
-    static bool isAIHelpShowing();
-    static void enableLogging(bool enable);
-    static void showUrl(const string& url);
-    static void additionalSupportFor(PublishCountryOrRegion countryOrRegion);
+        static void login(LoginConfig apiConfig);
 
-    static void setNetworkCheckHostAddress(const string& address, OnNetworkCheckResultCallback callback);
-    static void setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback);
-    static void setOnAIHelpInitializedAsyncCallback(OnAIHelpInitializedCallback callback);
-    static void startUnreadMessageCountPolling(OnMessageCountArrivedCallback callback);
-    static void setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCallback callback);
-    static void setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback callback);
-    static void setOnAIHelpSessionCloseCallback(OnAIHelpSessionCloseCallback callback);
-    static void setOnAIHelpSpecificUrlClickedCallback(OnAIHelpSpecificUrlClickedCallback callback);
+        static void logout();
+
+        static void updateUserInfo(UserConfig userConfig);
+
+        static void resetUserInfo();
+
+        static void updateSDKLanguage(const std::string &language);
+
+        static void setUploadLogPath(const std::string &path);
+
+        static void setPushTokenAndPlatform(const std::string &pushToken, PushPlatform platform);
+
+        static std::string getSDKVersion();
+
+        static bool isAIHelpShowing();
+
+        static void enableLogging(bool enable);
+
+        static void showUrl(const std::string &url);
+
+        static void additionalSupportFor(PublishCountryOrRegion countryOrRegion);
+
+        static void startUnreadMessageCountPolling();
+
+        static void stopUnreadMessageCountPolling();
+
+        static void registerAsyncEventListener(EventType eventType, OnAsyncEventListener listener);
+
+        static void unregisterAsyncEventListener(EventType eventType);
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    static void setSDKInterfaceOrientationMask(int interfaceOrientationMask);   // iOS only
-    static void setSDKAppearanceMode(int mode); // iOS only  0: follow the system 1: light mode 2: dark mode
-    static void setSDKEdgeInsets(float top,float bottom,bool enable); // iOS only
-    static void setSDKEdgeColor(float red,float green,float blue,float alpha); // iOS only
+        static void setSDKInterfaceOrientationMask(int interfaceOrientationMask);   // iOS only
+        static void setSDKAppearanceMode(int mode); // iOS only  0: follow the system 1: light mode 2: dark mode
 #endif
-};
+    };
+} // AIHelp
+
+namespace std {
+    template<>
+    struct hash<AIHelp::EventType> {
+        std::size_t operator()(const AIHelp::EventType &e) const {
+            return std::hash<int>()(static_cast<int>(e));
+        }
+    };
+}
 
 #endif

@@ -2,6 +2,8 @@
 #include "DemoScene.h"
 #include "AIHelp/AIHelpSupport.h"
 
+using namespace AIHelp;
+
 USING_NS_CC;
 
 AppDelegate::AppDelegate() {
@@ -18,27 +20,6 @@ void AppDelegate::initGLContextAttrs() {
     GLContextAttrs glContextAttrs = {8, 8, 8, 8, 24, 8};
 
     GLView::setGLContextAttrs(glContextAttrs);
-}
-
-void AIHelp_onAIHelpInit(bool isSuccess, const char *message) {
-    CCLOG("AIHelp Cocos2dx Callback init complete, %d", isSuccess);
-}
-
-void AIHelp_onAIHelpInitAsync(bool isSuccess, const char *message) {
-    CCLOG("AIHelp Cocos2dx Async Callback init complete, %d", isSuccess);
-}
-
-static void AIHelp_onFormSubmitted() {
-    CCLOG("AIHelp Cocos2dx Callback onFormSubmitted");
-}
-
-static void AIHelp_onOperationUnreadChanged(bool hasUnreadArticles) {
-    if (hasUnreadArticles) {
-        CCLOG("AIHelp Cocos2dx Callback has unread articles");
-    } else {
-        CCLOG("AIHelp Cocos2dx Callback no unread articles");
-    }
-
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
@@ -68,21 +49,72 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // init AIHelp
     AIHelpSupport::enableLogging(true);
-//    AIHelpSupport::init(
-//            "THIS IS YOUR APP KEY",
-//            "THIS IS YOUR APP DOMAIN",
-//            "THIS IS YOUR APP ID",
-//            "THIS IS YOUR DEFAULT LANGUAGE(OPTIONAL)");
 
-    AIHelpSupport::additionalSupportFor(PublishCountryOrRegion::IN);
-    AIHelpSupport::init(
-            "adfadf",
-            "a.aihelp.net",
+//    AIHelpSupport::additionalSupportFor(PublishCountryOrRegion::IN);
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+    AIHelpSupport::initialize(
+            "release.aihelp.net",
             "TryElva_platform_79453658-02b7-42fb-9384-8e8712539777",
             "zh_CN");
-    AIHelpSupport::setOnAIHelpInitializedCallback(AIHelp_onAIHelpInit);
-    AIHelpSupport::setOnAIHelpInitializedAsyncCallback(AIHelp_onAIHelpInitAsync);
-    AIHelpSupport::setOnSpecificFormSubmittedCallback(AIHelp_onFormSubmitted);
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+    AIHelpSupport::initialize(
+            "release.aihelp.net",
+            "TryElva_platform_09ebf7fa-8d45-4843-bd59-cfda3d8a8dc0",
+            "zh_CN");
+#endif
+
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::INITIALIZATION,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx init: %s", jsonData);
+            });
+
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::USER_LOGIN,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx login: %s", jsonData);
+            });
+
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::ENTERPRISE_AUTH,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx auth: %s", jsonData);
+                ack(EventType::ENTERPRISE_AUTH, "{\"token\":\"this is your async token\"}");
+            });
+
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::MESSAGE_ARRIVAL,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx message arrived: %s", jsonData);
+            });
+
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::LOG_UPLOAD,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx upload log: %s", jsonData);
+                ack(EventType::LOG_UPLOAD, "{\"content\":\"this is your log\"}");
+            });
+
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::SESSION_OPEN,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx open: %s", jsonData);
+            });
+
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::SESSION_CLOSE,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx close: %s", jsonData);
+                AIHelpSupport::unregisterAsyncEventListener(EventType::SESSION_OPEN);
+                AIHelpSupport::unregisterAsyncEventListener(EventType::SESSION_CLOSE);
+                AIHelpSupport::unregisterAsyncEventListener(EventType::MESSAGE_ARRIVAL);
+            });
+
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::URL_CLICK,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx Url: %s", jsonData);
+            });
 
     return true;
 }

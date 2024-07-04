@@ -1,6 +1,9 @@
 #include "DemoScene.h"
 #include "AIHelp/AIHelpSupport.h"
-#include "AIHelp/AIHelpConfig.h"
+#include <iostream>
+#include <random>
+
+using namespace AIHelp;
 
 USING_NS_CC;
 
@@ -105,12 +108,12 @@ bool GameScene::init() {
     menuItemPush->setPosition(Vec2(750, 380));
     menuItemPush->setColor(Color3B(51, 51, 51));
 
-    auto menuItemNetCheck = MenuItemFont::create("Network Check",
-                                                 CC_CALLBACK_1(
-                                                         GameScene::setNetworkCheckHostAddress,
-                                                         this));
-    menuItemNetCheck->setPosition(Vec2(750, 310));
-    menuItemNetCheck->setColor(Color3B(51, 51, 51));
+//    auto menuItemNetCheck = MenuItemFont::create("Network Check",
+//                                                 CC_CALLBACK_1(
+//                                                         GameScene::setNetworkCheckHostAddress,
+//                                                         this));
+//    menuItemNetCheck->setPosition(Vec2(750, 310));
+//    menuItemNetCheck->setColor(Color3B(51, 51, 51));
 
     auto menuItemUploadLog = MenuItemFont::create("Upload Log",
                                                   CC_CALLBACK_1(GameScene::setUploadLogPath, this));
@@ -132,7 +135,7 @@ bool GameScene::init() {
     auto menu = Menu::create(menuItemBot, menuItemManual, menuItemAllSections, menuItemSingle,
                              menuItemSingleFAQ, menuItemLogin, menuItemLogout,
                              goInternational,
-                             menuItemUnread, menuItemPush, menuItemNetCheck, menuItemUploadLog,
+                             menuItemUnread, menuItemPush, menuItemUploadLog,
                              menuItemLog, menuItemVersion, NULL);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu);
@@ -147,7 +150,7 @@ void GameScene::showBotSupport(cocos2d::Ref *obj) {
 }
 
 void GameScene::showManualSupport(cocos2d::Ref *obj) {
-    AIHelpSupportApiConfig apiConfig = AIHelpSupportApiConfigBuilder()
+    ApiConfig apiConfig = ApiConfigBuilder()
             .setEntranceId("THIS IS YOUR ENTRANCE ID")
             .setWelcomeMessage("THIS IS YOUR WELCOME MESSAGE").build();
     AIHelpSupport::show(apiConfig);
@@ -169,16 +172,32 @@ void GameScene::showSingleFAQ(cocos2d::Ref *obj) {
 
 
 // ================================= Configuration =================================
+std::string generateRandomDigitsString() {
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<long long> dis(1000000000LL, 9999999999LL); // 范围是 10^9 到 10^10 - 1
+
+    long long randomNumber = dis(gen);
+    std::stringstream ss;
+    ss << randomNumber;
+    return ss.str();
+}
 
 void GameScene::updateUserInfo(cocos2d::Ref *obj) {
-    AIHelpSupportUserConfig userConfig = AIHelpSupportUserConfigBuilder()
-            .setUserId("UID")
+    UserConfig userConfig = UserConfigBuilder()
             .setServerId("SERVER ID")
             .setUserName("USER NAME")
             .setUserTags("pay1,s1,vip2")
             .setCustomData("{\"level\":34,\"total_recharge\":300,\"remaining\":56}")
             .build();
-    AIHelpSupport::updateUserInfo(userConfig);
+
+    LoginConfig config = LoginConfigBuilder()
+            .setUserId(generateRandomDigitsString())
+            .setUserConfig(userConfig)
+//            .setEnterpriseAuth(true)
+            .build();
+
+    AIHelpSupport::login(config);
 }
 
 void GameScene::resetUserInfo(cocos2d::Ref *obj) {
@@ -194,24 +213,12 @@ void GameScene::updateLanguage(cocos2d::Ref *obj) {
 
 // ================================= Others =================================
 
-static void AIHelp_unreadMessageArrived(const int unreadCount) {
-    CCLOGERROR("AIHelp Cocos2dx Callback unreadMessageArrived %d", unreadCount);
-}
-
-void AIHelp_onNetworkCheckResult(const char * netLog) {
-    CCLOGERROR("AIHelp Cocos2dx Callback onNetworkCheckResult %s", netLog);
-}
-
 void GameScene::startUnreadMessageCountPolling(cocos2d::Ref *obj) {
-    AIHelpSupport::startUnreadMessageCountPolling(AIHelp_unreadMessageArrived);
+    AIHelpSupport::startUnreadMessageCountPolling();
 }
 
 void GameScene::setPushTokenAndPlatform(cocos2d::Ref *obj) {
     AIHelpSupport::setPushTokenAndPlatform("YOUR PUSH TOKEN", FIREBASE);
-}
-
-void GameScene::setNetworkCheckHostAddress(cocos2d::Ref *obj) {
-    AIHelpSupport::setNetworkCheckHostAddress("aihelp.net", AIHelp_onNetworkCheckResult);
 }
 
 void GameScene::setUploadLogPath(cocos2d::Ref *obj) {

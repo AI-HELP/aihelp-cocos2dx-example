@@ -8,40 +8,9 @@
 #import "AIHelpSupport.h"
 #import <AIHelpSupportSDK/AIHelpSupportSDK.h>
 
+using namespace AIHelp;
+
 #pragma mark Utility methods.
-
-static OnNetworkCheckResultCallback s_theAIhelpNetworkCheckCallBack = NULL;
-static OnAIHelpInitializedCallback s_theAIhelpInitCallBack = NULL;
-static OnAIHelpInitializedAsyncCallback s_theAIhelpInitAsyncCallBack = NULL;
-static OnMessageCountArrivedCallback s_theAIhelpUnreadMessageCallBack = NULL;
-static OnSpecificFormSubmittedCallback s_theAIhelpSpecificFormSubmittedCallback = NULL;
-static OnAIHelpSessionOpenCallback s_theAIhelpOnAIHelpSessionOpenCallback = NULL;
-static OnAIHelpSessionCloseCallback s_theAIhelpOnAIHelpSessionCloseCallback = NULL;
-static OnAIHelpSpecificUrlClickedCallback s_theAIHelpSpecificUrlClickedCallback = NULL;
-
-static void AIHelp_onNetworkCheckFinish(const char * log) {
-    if(s_theAIhelpNetworkCheckCallBack && log != nil) {
-        s_theAIhelpNetworkCheckCallBack(log);
-    }
-}
-
-static void AIHelp_onAIHelpInit(const bool isSuccess, const char * message) {
-    if(s_theAIhelpInitCallBack && message != nil) {
-        s_theAIhelpInitCallBack(isSuccess, message);
-    }
-}
-
-static void AIHelp_onAIHelpInitAsync(const bool isSuccess, const char * message) {
-    if(s_theAIhelpInitAsyncCallBack && message != nil) {
-        s_theAIhelpInitAsyncCallBack(isSuccess, message);
-    }
-}
-
-static void AIHelp_onAIHelpUnreadMessage(const int unreadCount) {
-    if(s_theAIhelpUnreadMessageCallBack) {
-        s_theAIhelpUnreadMessageCallBack(unreadCount);
-    }
-}
 
 static NSString* AIHelpParseCString(const char *cstring) {
     if (cstring == NULL) {
@@ -53,46 +22,15 @@ static NSString* AIHelpParseCString(const char *cstring) {
     return nsstring;
 }
 
-#pragma mark - Interface implementation
-
-void AIHelpSupport::init(const string& apiKey, const string& domainName, const string& appId) {
-    NSString *nsApikey = AIHelpParseCString(apiKey.c_str());
-    NSString *nsDomainName = AIHelpParseCString(domainName.c_str());
-    NSString *nsAppId = AIHelpParseCString(appId.c_str());
-    [AIHelpSupportSDK initWithApiKey:nsApikey domainName:nsDomainName appId:nsAppId];
-}
-
-void AIHelpSupport::init(const string& apiKey, const string& domainName, const string& appId, const string& language) {
-    NSString *nsApikey = AIHelpParseCString(apiKey.c_str());
-    NSString *nsDomainName = AIHelpParseCString(domainName.c_str());
-    NSString *nsAppId = AIHelpParseCString(appId.c_str());
-    NSString *nsLanguage = AIHelpParseCString(language.c_str());
-    [AIHelpSupportSDK initWithApiKey:nsApikey domainName:nsDomainName appId:nsAppId language:nsLanguage];
-}
-
-bool AIHelpSupport::show(const string& entranceId) {
-    return [AIHelpSupportSDK showWithEntranceId:AIHelpParseCString(entranceId.c_str())];
-}
-
-bool AIHelpSupport::show(AIHelpSupportApiConfig apiConfig) {
-    AIHelpApiConfigBuilder *configBuilder = [[AIHelpApiConfigBuilder alloc] init];
-    configBuilder.entranceId = AIHelpParseCString(apiConfig.getEntranceId().c_str());
-    configBuilder.welcomeMessage = AIHelpParseCString(apiConfig.getWelcomeMessage().c_str());
-    return [AIHelpSupportSDK showWithApiConfig:configBuilder.build];
-}
-
-void AIHelpSupport::updateUserInfo(AIHelpSupportUserConfig userConfig) {
-    NSString *nsuserId = AIHelpParseCString(userConfig.getUserId().c_str());
+static AIHelpUserConfig* getAIHelpUserConfig(AIHelp::UserConfig userConfig) {
     NSString *nsuserName = AIHelpParseCString(userConfig.getUserName().c_str());
     NSString *nsserverId = AIHelpParseCString(userConfig.getServerId().c_str());
     NSString *nsuserTags = AIHelpParseCString(userConfig.getUserTags().c_str());
     NSString *nscustomData = AIHelpParseCString(userConfig.getCustomData().c_str());
     
     AIHelpUserConfigBuilder *userBuilder = [[AIHelpUserConfigBuilder alloc] init];
-    userBuilder.userId = nsuserId;
     userBuilder.userName = nsuserName;
     userBuilder.serverId = nsserverId;
-    userBuilder.isSyncCrmInfo = userConfig.getIsSyncCrmInfo();
     if ([nsuserTags containsString:@","] && [nsuserTags componentsSeparatedByString:@","]) {
         userBuilder.userTags = [nsuserTags componentsSeparatedByString:@","];
     }
@@ -104,24 +42,88 @@ void AIHelpSupport::updateUserInfo(AIHelpSupportUserConfig userConfig) {
             userBuilder.customData = dic;
         }
     }
-    [AIHelpSupportSDK updateUserInfo:userBuilder.build];
+    return userBuilder.build;
+}
+
+// Function to extract a value from JSON
+std::string extractValue(const std::string& jsonString, const std::string& key) {
+    std::string value;
+    std::istringstream iss(jsonString);
+    std::string line;
+
+    while (std::getline(iss, line)) {
+        size_t keyPos = line.find("\"" + key + "\"");
+        if (keyPos != std::string::npos) {
+            // Found the key, extract the value
+            size_t colonPos = line.find(':', keyPos);
+            if (colonPos != std::string::npos) {
+                size_t valueStart = line.find_first_not_of(" \t\r\n", colonPos + 1);
+                if (valueStart != std::string::npos) {
+                    size_t valueEnd = line.find_last_not_of(" \t\r\n");
+                    value = line.substr(valueStart, valueEnd - valueStart + 1);
+                    // Remove surrounding quotes if present
+                    if (!value.empty() && (value.front() == '"' && value.back() == '"')) {
+                        value = value.substr(1, value.length() - 2);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    return value;
+}
+
+#pragma mark - Interface implementation
+
+void AIHelpSupport::initialize(const std::string& domainName, const std::string& appId, const std::string& language) {
+    NSString *nsDomainName = AIHelpParseCString(domainName.c_str());
+    NSString *nsAppId = AIHelpParseCString(appId.c_str());
+    NSString *nsLanguage = AIHelpParseCString(language.c_str());
+    [AIHelpSupportSDK initializeWithDomainName:nsDomainName appId:nsAppId language:nsLanguage];
+}
+
+bool AIHelpSupport::show(const std::string& entranceId) {
+    return [AIHelpSupportSDK showWithEntranceId:AIHelpParseCString(entranceId.c_str())];
+}
+
+bool AIHelpSupport::show(ApiConfig apiConfig) {
+    AIHelpApiConfigBuilder *configBuilder = [[AIHelpApiConfigBuilder alloc] init];
+    configBuilder.entranceId = AIHelpParseCString(apiConfig.getEntranceId().c_str());
+    configBuilder.welcomeMessage = AIHelpParseCString(apiConfig.getWelcomeMessage().c_str());
+    return [AIHelpSupportSDK showWithApiConfig:configBuilder.build];
+}
+
+void AIHelpSupport::login(LoginConfig loginConfig) {
+    AIHelpLoginConfigBuilder *builder = [[AIHelpLoginConfigBuilder alloc] init];
+    builder.userId = AIHelpParseCString(loginConfig.getUserId().c_str());
+    builder.userConfig = getAIHelpUserConfig(loginConfig.getUserConfig());
+    builder.isEnterpriseAuth = loginConfig.isEnterpriseAuth();
+    [AIHelpSupportSDK login:builder.build];
+}
+
+void AIHelpSupport::logout() {
+    [AIHelpSupportSDK logout];
+}
+
+void AIHelpSupport::updateUserInfo(UserConfig userConfig) {
+    [AIHelpSupportSDK updateUserInfo: getAIHelpUserConfig(userConfig)];
 }
 
 void AIHelpSupport::resetUserInfo() {
     [AIHelpSupportSDK resetUserInfo];
 }
 
-void AIHelpSupport::updateSDKLanguage(const string& language) {
+void AIHelpSupport::updateSDKLanguage(const std::string& language) {
     NSString *nslanguage = AIHelpParseCString(language.c_str());
     [AIHelpSupportSDK updateSDKLanguage:nslanguage];
 }
 
-void AIHelpSupport::setUploadLogPath(const string& path) {
+void AIHelpSupport::setUploadLogPath(const std::string& path) {
     NSString *nspath = AIHelpParseCString(path.c_str());
     [AIHelpSupportSDK setUploadLogPath:nspath];
 }
 
-void AIHelpSupport::setPushTokenAndPlatform(const string& pushToken, PushPlatform platform) {
+void AIHelpSupport::setPushTokenAndPlatform(const std::string& pushToken, PushPlatform platform) {
     NSString *nspushToken = AIHelpParseCString(pushToken.c_str());
     AIHelpTokenPlatform ePlatform;
     switch (platform) {
@@ -143,7 +145,7 @@ void AIHelpSupport::setPushTokenAndPlatform(const string& pushToken, PushPlatfor
     [AIHelpSupportSDK setPushToken:nspushToken pushPlatform:ePlatform];
 }
 
-string AIHelpSupport::getSDKVersion() {
+std::string AIHelpSupport::getSDKVersion() {
     return [AIHelpSupportSDK getSDKVersion].UTF8String;
 }
 
@@ -155,7 +157,7 @@ void AIHelpSupport::enableLogging(bool enable) {
     [AIHelpSupportSDK enableLogging:enable];
 }
 
-void AIHelpSupport::showUrl(const string& url) {
+void AIHelpSupport::showUrl(const std::string& url) {
     NSString *urlStr = AIHelpParseCString(url.c_str());
     [AIHelpSupportSDK showUrl:urlStr];
 }
@@ -168,62 +170,56 @@ void AIHelpSupport::additionalSupportFor(PublishCountryOrRegion countryOrRegion)
     [AIHelpSupportSDK additionalSupportFor:tmpCountryOrRegion];
 }
 
+
+namespace {
+    // Define a map to store event listeners
+    std::unordered_map<AIHelp::EventType, AIHelp::OnAsyncEventListener> g_eventListeners;
+    std::unordered_map<AIHelp::EventType, void (*)(const char *)> g_eventCompletions;
+
+    void acknowledge(AIHelp::EventType eventType, const char *jsonAckData) {
+        auto it = g_eventCompletions.find(eventType);
+        if (it != g_eventCompletions.end()) {
+            // Call the completion function associated with the event type
+            it->second(jsonAckData);
+        }
+    }
+
+    // Adapter function
+    void adapterCallback(const char *aihelpMessage, void (*completion)(const char *message)) {
+        std::string eventType = extractValue(aihelpMessage, "eventType");
+        int eventTypeInt = std::stoi(eventType);
+        AIHelp::EventType e = static_cast<AIHelp::EventType>(eventTypeInt);
+        auto it = g_eventListeners.find(e);
+        if (it != g_eventListeners.end()) {
+            // Store the completion callback
+            g_eventCompletions[e] = completion;
+            // Call the stored listener with acknowledge function
+            it->second(aihelpMessage, acknowledge);
+        }
+    }
+}
+
+void AIHelpSupport::registerAsyncEventListener(EventType eventType, OnAsyncEventListener listener) {
+    AIHelpEventype aiHelpEventType = static_cast<AIHelpEventype>(static_cast<int>(eventType));
+    g_eventListeners[eventType] = listener;
+    [AIHelpSupportSDK registerEvent:aiHelpEventType listener:adapterCallback];
+}
+
+void AIHelpSupport::unregisterAsyncEventListener(EventType eventType) {
+    AIHelpEventype aiHelpEventType = static_cast<AIHelpEventype>(static_cast<int>(eventType));
+    [AIHelpSupportSDK unregisterEvent:aiHelpEventType];
+}
+
+void AIHelpSupport::startUnreadMessageCountPolling() {
+    [AIHelpSupportSDK startUnreadMessageCountPolling];
+}
+
 void AIHelpSupport::setSDKInterfaceOrientationMask(int interfaceOrientationMask) {
     [AIHelpSupportSDK setSDKInterfaceOrientationMask:interfaceOrientationMask];
 }
 
-void AIHelpSupport::setNetworkCheckHostAddress(const string& address, OnNetworkCheckResultCallback callback) {
-    NSString *nsaddress = AIHelpParseCString(address.c_str());
-    s_theAIhelpNetworkCheckCallBack = callback;
-    [AIHelpSupportSDK setNetworkCheckHostAddress:nsaddress callback:AIHelp_onNetworkCheckFinish];
-}
-
-void AIHelpSupport::setOnAIHelpInitializedCallback(OnAIHelpInitializedCallback callback) {
-    s_theAIhelpInitCallBack = callback;
-    [AIHelpSupportSDK setOnInitializedCallback:AIHelp_onAIHelpInit];
-}
-
-void AIHelpSupport::setOnAIHelpInitializedAsyncCallback(OnAIHelpInitializedCallback callback) {
-    s_theAIhelpInitAsyncCallBack = callback;
-    [AIHelpSupportSDK setOnInitializedAsyncCallback:AIHelp_onAIHelpInitAsync];
-}
-
-void AIHelpSupport::startUnreadMessageCountPolling(OnMessageCountArrivedCallback callback) {
-    s_theAIhelpUnreadMessageCallBack = callback;
-    [AIHelpSupportSDK startUnreadMessageCountPolling:AIHelp_onAIHelpUnreadMessage];
-}
-
-void AIHelpSupport::setOnSpecificFormSubmittedCallback(OnSpecificFormSubmittedCallback callback) {
-    s_theAIhelpSpecificFormSubmittedCallback = callback;
-    [AIHelpSupportSDK setOnSpecificFormSubmittedCallback:callback];
-}
-
 void AIHelpSupport::setSDKAppearanceMode(int mode) {
     [AIHelpSupportSDK setSDKAppearanceMode:mode];
-}
-
-void AIHelpSupport::setSDKEdgeInsets(float top,float bottom,bool enable) {
-    [AIHelpSupportSDK setSDKEdgeInsetsWithTop:top bottom:bottom enable:enable];
-}
-
-void AIHelpSupport::setSDKEdgeColor(float red,float green,float blue,float alpha) {
-    [AIHelpSupportSDK setSDKEdgeColorWithRed:red green:green blue:blue alpha:alpha];
-}
-
-void AIHelpSupport::setOnAIHelpSessionOpenCallback(OnAIHelpSessionOpenCallback callback) {
-    s_theAIhelpOnAIHelpSessionOpenCallback = callback;
-    [AIHelpSupportSDK setOnAIHelpSessionOpenCallback:callback];
-}
-
-void AIHelpSupport::setOnAIHelpSessionCloseCallback(OnAIHelpSessionCloseCallback callback) {
-    s_theAIhelpOnAIHelpSessionCloseCallback = callback;
-    [AIHelpSupportSDK setOnAIHelpSessionCloseCallback:callback];
-}
-
-void AIHelpSupport::setOnAIHelpSpecificUrlClickedCallback(OnAIHelpSpecificUrlClickedCallback callback)
-{
-    s_theAIHelpSpecificUrlClickedCallback = callback;
-    [AIHelpSupportSDK setOnAIHelpSpecificUrlClickedCallback:callback];
 }
 
 #endif

@@ -56,13 +56,21 @@ endif ()
 
 # add cross-platforms source files and header files 
 list(APPEND GAME_SOURCE
-        Classes/AIHelp/AIHelpConfig.cpp
+#        Classes/AIHelp/AIHelpConfig.cpp
+        Classes/AIHelp/config/ApiConfig.cpp
+        Classes/AIHelp/config/UserConfig.cpp
+        Classes/AIHelp/config/LoginConfig.cpp
         Classes/AIHelp/AIHelpSupport.cpp
         Classes/AppDelegate.cpp
         Classes/DemoScene.cpp
         )
 list(APPEND GAME_HEADER
-        Classes/AIHelp/AIHelpConfig.h
+#        Classes/AIHelp/AIHelpConfig.h
+        Classes/AIHelp/config/Callbacks.h
+        Classes/AIHelp/config/Enums.h
+        Classes/AIHelp/config/ApiConfig.h
+        Classes/AIHelp/config/UserConfig.h
+        Classes/AIHelp/config/LoginConfig.h
         Classes/AIHelp/AIHelpSupport.h
         Classes/AppDelegate.h
         Classes/DemoScene.h

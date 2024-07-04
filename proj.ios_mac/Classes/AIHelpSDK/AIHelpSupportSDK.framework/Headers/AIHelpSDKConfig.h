@@ -41,6 +41,28 @@ typedef NS_ENUM(int, AIHelpFAQSupportEntrance) {
     AIHelpFAQSupportEntranceFAQNotFound = 5,
 };
 
+typedef NS_ENUM(int, AIHelpLoginStatus) {
+    AIHelpLoginSuccess = 1,
+    AIHelpInvalidUID = -1,
+    AIHelpAuthError = -2,
+};
+
+typedef NS_ENUM(int, AIHelpEventype) {
+    AIHelpEventInitialization,                      // Event for SDK initialization
+    AIHelpEventUserLogin,                           // Event for user login
+    AIHelpEventEnterpriseAuth,                      // Event for enterprise authentication
+    AIHelpEventSessionOpen,                         // Event for opening a session (window)
+    AIHelpEventSessionClose,                        // Event for closing a session (window)
+    AIHelpEventMessageArrival,                      // Event for message arrival
+    AIHelpEventLogUpload,                           // Event for log upload
+    AIHelpEventUrlClick,                            // Event for URL click
+};
+
+typedef void (*AISupportEventListener)(const char *aihelpMessage, void (*completion)(const char *message));
+
+typedef void (*AISupportEnterpriseAuthCallBack)(void (*completion)(const char *token));
+typedef void (*AISupportLoginResultCallBack)(AIHelpLoginStatus code, const char *message);
+
 #pragma mark - ECServiceUserConfig
 
 @interface AIHelpUserConfig : NSObject
@@ -48,7 +70,6 @@ typedef NS_ENUM(int, AIHelpFAQSupportEntrance) {
 @end
 
 @interface AIHelpUserConfigBuilder : NSObject
-@property (nonatomic, copy)NSString       *userId;        // default is unique deviceId
 @property (nonatomic, copy)NSString       *userName;      // default is "anonymous"
 @property (nonatomic, copy)NSString       *serverId;      // default is nil
 @property (nonatomic, strong)NSArray        *userTags;      // If you assign this field with existing tags from aihelp admin dashboard, the tickets created by current user will take these tags by default.
@@ -67,4 +88,21 @@ typedef NS_ENUM(int, AIHelpFAQSupportEntrance) {
 @property (nonatomic, copy)NSString *entranceId;
 @property (nonatomic, copy)NSString *welcomeMessage;
 - (AIHelpApiConfig *)build;
+@end
+
+#pragma mark - AIHelpLoginConfig
+
+@interface AIHelpLoginConfig : NSObject
+- (id) init NS_UNAVAILABLE;
+@end
+
+@interface AIHelpLoginConfigBuilder : NSObject
+
+@property (nonatomic, copy) NSString *userId;
+@property (nonatomic, assign) BOOL isEnterpriseAuth;
+
+@property (nonatomic, strong) AIHelpUserConfig *userConfig;
+
+- (AIHelpLoginConfig *)build;
+
 @end

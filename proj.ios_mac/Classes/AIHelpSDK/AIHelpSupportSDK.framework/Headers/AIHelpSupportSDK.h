@@ -9,37 +9,42 @@
 #import <AIHelpSupportSDK/AIHelpSDKConfig.h>
 #import <UIKit/UIKit.h>
 
-typedef void (*AISupportInitCallBack)(const bool isSuccess, const char * message);
-typedef void (*AISupportMessageCallBack)(const int unreadCount);
-typedef void (*AISupportPingCallBack)(const char * log);
-typedef void (*AISupportIsSpecificFormCallBack)(void);
-typedef void (*AISupportOpenSDKCallBack)(void);
-typedef void (*AISupportCloseSDKCallBack)(void);
-typedef void (*AISupportOperationUnReadCallBack)(const bool hasUnreadArticles);
-typedef void (*AISupportSpecificUrlClickedCallBack)(const char * url);
-
 @interface AIHelpSupportSDK : NSObject
 
 /**
  * Initialize AIHelp sdk
  *
  * When initializing AIHelp you must pass these three tokens. You initialize AIHelp by adding the following lines in the implementation file for your app delegate, ideally at the top of application:didFinishLaunchingWithOptions
- * @param apiKey This is your developer API Key
  * @param domainName This is your domain name without any http:// or forward slashes
  * @param appId  This is the unique ID assigned to your app
  */
-+ (void)initWithApiKey:(NSString *)apiKey domainName:(NSString *)domainName appId:(NSString *)appId;
++ (void)initializeWithDomainName:(NSString *)domainName appId:(NSString *)appId;
 
 /**
  * Initialize AIHelp sdk
  *
  * When initializing AIHelp you must pass these three tokens. You initialize AIHelp by adding the following lines in the implementation file for your app delegate, ideally at the top of application:didFinishLaunchingWithOptions
- * @param apiKey This is your developer API Key
  * @param domainName This is your domain name without any http:// or forward slashes
  * @param appId  This is the unique ID assigned to your app
  * @param language  This is your expected init language
  */
-+ (void)initWithApiKey:(NSString *)apiKey domainName:(NSString *)domainName appId:(NSString *)appId language:(NSString *)language;
++ (void)initializeWithDomainName:(NSString *)domainName appId:(NSString *)appId language:(NSString *)language;
+
+/**
+ * Logs in a user using their user ID.
+ * * @param userId the unique identifier of the user to log in
+ */
++ (void)loginWithUserId:(NSString *)userId;
+
+/**
+ * Logs in a user using a LoginConfig object.
+ * <p>
+ * Checkout {@link LoginConfig} for more information.
+ *
+ * @param config the configuration object containing login details.
+ * @see LoginConfig
+ */
++ (void)login:(AIHelpLoginConfig *)config;
 
 /**
  * Show the AIHelp conversation screen.
@@ -126,49 +131,29 @@ typedef void (*AISupportSpecificUrlClickedCallBack)(const char * url);
  * @param interfaceOrientationMask please refer to the UIInterfaceOrientationMask API
  */
 + (void)setSDKInterfaceOrientationMask:(UIInterfaceOrientationMask)interfaceOrientationMask;
-
 /**
- * Set up host address for network check with result callback.
+ * Unregisters an event listener for a specific event type.
  *
- * With this api, you can get the network check result passing back to you.
- * @param address host address for network checking, without schemes such 'https://' or 'http://'.
- *                    For example, you can pass in 'www.google.com' or just 'google.com', no schemes are needed.
- * @param callback    network check result callback, you can get the check result via this callback
+ * @param eventType The type of event to stop listening for.
  */
-+ (void)setNetworkCheckHostAddress:(NSString*)address callback:(AISupportPingCallBack)callback;
++ (void)registerEvent:(AIHelpEventype)eventType listener:(AISupportEventListener)listener;
 
-/**
- * Register callback for the process of AIHelp's initialization.
- *
- * After you register this callback, SDK will let you know if the init work is done.
- * You can call this method either before or after the init method.
- * @param callback callback for AIHelp initialization
- */
-+ (void)setOnInitializedCallback:(AISupportInitCallBack)callback __attribute__((deprecated("Use `setOnInitializedAsyncCallback:` instead")));
-
-/**
- * Register callback for the process of AIHelp's initialization.
- *
- * After you register this callback, SDK will let you know if the init work is done.
- * You can call this method either before or after the init method.
- * @param callback callback for AIHelp initialization
- */
-+ (void)setOnInitializedAsyncCallback:(AISupportInitCallBack)callback;
++ (void)unregisterEvent:(AIHelpEventype)eventType;
 
 /**
  * start in-app unread message count polling
  *
  * This is a schedule work, get unread message count every five minutes.
- * If you want to stop a started polling, just pass null to the listener parameters.
- * @param callback callback for unread message polling
  */
-+ (void)startUnreadMessageCountPolling:(AISupportMessageCallBack)callback;
++ (void)startUnreadMessageCountPolling;
+
++ (void)stopUnreadMessageCountPolling;
+
 
 /**
  * Fetch unread message count proactively
- * @param  callback for unread message fetching
  */
-+ (void)fetchUnreadMessageCount:(AISupportMessageCallBack)callback;
++ (void)fetchUnreadMessageCount;
 /**
  * Set the SDK display mode
  *
@@ -191,19 +176,11 @@ typedef void (*AISupportSpecificUrlClickedCallBack)(const char * url);
 
 + (void)setKeyWindow:(UIWindow *)keyWin;
 
-+ (void)setOnAIHelpSessionOpenCallback:(AISupportOpenSDKCallBack)callback;
-
-+ (void)setOnAIHelpSessionCloseCallback:(AISupportCloseSDKCallBack)callback;
-
-+ (void)setOnSpecificFormSubmittedCallback:(AISupportIsSpecificFormCallBack)callBack;
-
-+ (void)setOnOperationUnreadChangedCallback:(AISupportOperationUnReadCallBack)callback;
-
-+ (void)setOnSpecificUrlClickedCallback:(AISupportSpecificUrlClickedCallBack)callback;
-
 + (void)setSDKEdgeInsetsWithTop:(float)top bottom:(float)bottom enable:(BOOL)enable;
 + (void)setSDKEdgeColorWithRed:(float)red green:(float)green blue:(float)blue alpha:(float)alpha;
 
 + (void)close;
+
++ (void)logout;
 
 @end

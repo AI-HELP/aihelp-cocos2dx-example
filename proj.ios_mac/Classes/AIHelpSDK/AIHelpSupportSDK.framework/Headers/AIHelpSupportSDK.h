@@ -136,19 +136,10 @@
  *
  * @param eventType The type of event to stop listening for.
  */
-+ (void)registerEvent:(AIHelpEventype)eventType listener:(AISupportEventListener)listener;
++ (void)registerAsyncListener:(AISupportAsyncEventListener)asyncEventListener
+                    eventType:(AIHelpEventType)eventType;
 
-+ (void)unregisterEvent:(AIHelpEventype)eventType;
-
-/**
- * start in-app unread message count polling
- *
- * This is a schedule work, get unread message count every five minutes.
- */
-+ (void)startUnreadMessageCountPolling;
-
-+ (void)stopUnreadMessageCountPolling;
-
++ (void)unregisterAsyncListenerWithEvent:(AIHelpEventType)eventType;
 
 /**
  * Fetch unread message count proactively

@@ -1,6 +1,8 @@
 #include "AppDelegate.h"
 #include "DemoScene.h"
 #include "AIHelp/AIHelpSupport.h"
+#include <future>
+#include <thread>
 
 using namespace AIHelp;
 
@@ -79,7 +81,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
             EventType::ENTERPRISE_AUTH,
             [](const char *jsonData, Acknowledge ack) {
                 CCLOG("AIHelp Cocos2dx auth: %s", jsonData);
-                ack(EventType::ENTERPRISE_AUTH, "{\"token\":\"this is your async token\"}");
+                ack(EventType::ENTERPRISE_AUTH, "{\"token\":\"this is your sync token\"}");
             });
 
     AIHelpSupport::registerAsyncEventListener(
@@ -87,13 +89,18 @@ bool AppDelegate::applicationDidFinishLaunching() {
             [](const char *jsonData, Acknowledge ack) {
                 CCLOG("AIHelp Cocos2dx message arrived: %s", jsonData);
             });
+    
 
     AIHelpSupport::registerAsyncEventListener(
-            EventType::LOG_UPLOAD,
-            [](const char *jsonData, Acknowledge ack) {
-                CCLOG("AIHelp Cocos2dx upload log: %s", jsonData);
-                ack(EventType::LOG_UPLOAD, "{\"content\":\"this is your log\"}");
+        EventType::LOG_UPLOAD,
+        [](const char* jsonData, Acknowledge ack) {
+            CCLOG("AIHelp Cocos2dx upload log: %s", jsonData);
+            std::async(std::launch::async, [jsonData, ack]() {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                ack(EventType::LOG_UPLOAD, "{\"content\":\"this is your async log\"}");
             });
+        }
+    );
 
     AIHelpSupport::registerAsyncEventListener(
             EventType::SESSION_OPEN,
@@ -107,7 +114,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
                 CCLOG("AIHelp Cocos2dx close: %s", jsonData);
                 AIHelpSupport::unregisterAsyncEventListener(EventType::SESSION_OPEN);
                 AIHelpSupport::unregisterAsyncEventListener(EventType::SESSION_CLOSE);
-                AIHelpSupport::unregisterAsyncEventListener(EventType::MESSAGE_ARRIVAL);
             });
 
     AIHelpSupport::registerAsyncEventListener(

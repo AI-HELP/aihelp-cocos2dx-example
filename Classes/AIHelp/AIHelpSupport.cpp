@@ -297,19 +297,9 @@ namespace AIHelp {
         }
     }
 
-    void AIHelpSupport::startUnreadMessageCountPolling() {
+    void AIHelpSupport::fetchUnreadMessageCount() {
         const char *sig = "()V";
-        const char *methodName = "startUnreadMessageCountPolling";
-        cocos2d::JniMethodInfo info;
-        if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, methodName, sig)) {
-            info.env->CallStaticVoidMethod(info.classID, info.methodID);
-            info.env->DeleteLocalRef(info.classID);
-        }
-    }
-
-    void AIHelpSupport::stopUnreadMessageCountPolling() {
-        const char *sig = "()V";
-        const char *methodName = "stopUnreadMessageCountPolling";
+        const char *methodName = "fetchUnreadMessageCount";
         cocos2d::JniMethodInfo info;
         if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, methodName, sig)) {
             info.env->CallStaticVoidMethod(info.classID, info.methodID);

@@ -42,10 +42,6 @@ bool GameScene::init() {
     otherTitle->setColor(titleColor);
     addChild(otherTitle);
 
-    auto logo = Sprite::create("logo.png");
-    logo->setPosition(Vec2(450, 160));
-    this->addChild(logo, 0);
-
     // ================================= Modules =================================
 
     auto menuItemBot = MenuItemFont::create("Robot",
@@ -98,7 +94,7 @@ bool GameScene::init() {
     // ================================= Configuration =================================
 
     auto menuItemUnread = MenuItemFont::create("Unread Messages", CC_CALLBACK_1(
-            GameScene::startUnreadMessageCountPolling, this));
+            GameScene::fetchUnreadMessageCount, this));
     menuItemUnread->setPosition(Vec2(750, 450));
     menuItemUnread->setColor(Color3B(51, 51, 51));
 
@@ -213,8 +209,8 @@ void GameScene::updateLanguage(cocos2d::Ref *obj) {
 
 // ================================= Others =================================
 
-void GameScene::startUnreadMessageCountPolling(cocos2d::Ref *obj) {
-    AIHelpSupport::startUnreadMessageCountPolling();
+void GameScene::fetchUnreadMessageCount(cocos2d::Ref *obj) {
+    AIHelpSupport::fetchUnreadMessageCount();
 }
 
 void GameScene::setPushTokenAndPlatform(cocos2d::Ref *obj) {

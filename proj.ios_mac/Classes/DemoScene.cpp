@@ -94,7 +94,7 @@ bool GameScene::init() {
     // ================================= Configuration =================================
 
     auto menuItemUnread = MenuItemFont::create("Unread Messages", CC_CALLBACK_1(
-            GameScene::startUnreadMessageCountPolling, this));
+            GameScene::fetchUnreadMessageCount, this));
     menuItemUnread->setPosition(Vec2(750, 450));
     menuItemUnread->setColor(Color3B(51, 51, 51));
 
@@ -189,7 +189,7 @@ void GameScene::updateUserInfo(cocos2d::Ref *obj) {
 
     LoginConfig config = LoginConfigBuilder()
             .setUserId(generateRandomDigitsString())
-            .setUserConfig(userConfig)
+//            .setUserConfig(userConfig)
 //            .setEnterpriseAuth(true)
             .build();
 
@@ -209,8 +209,8 @@ void GameScene::updateLanguage(cocos2d::Ref *obj) {
 
 // ================================= Others =================================
 
-void GameScene::startUnreadMessageCountPolling(cocos2d::Ref *obj) {
-    AIHelpSupport::startUnreadMessageCountPolling();
+void GameScene::fetchUnreadMessageCount(cocos2d::Ref *obj) {
+    AIHelpSupport::fetchUnreadMessageCount();
 }
 
 void GameScene::setPushTokenAndPlatform(cocos2d::Ref *obj) {

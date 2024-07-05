@@ -47,7 +47,7 @@ typedef NS_ENUM(int, AIHelpLoginStatus) {
     AIHelpAuthError = -2,
 };
 
-typedef NS_ENUM(int, AIHelpEventype) {
+typedef NS_ENUM(int, AIHelpEventType) {
     AIHelpEventInitialization,                      // Event for SDK initialization
     AIHelpEventUserLogin,                           // Event for user login
     AIHelpEventEnterpriseAuth,                      // Event for enterprise authentication
@@ -58,10 +58,7 @@ typedef NS_ENUM(int, AIHelpEventype) {
     AIHelpEventUrlClick,                            // Event for URL click
 };
 
-typedef void (*AISupportEventListener)(const char *aihelpMessage, void (*completion)(const char *message));
-
-typedef void (*AISupportEnterpriseAuthCallBack)(void (*completion)(const char *token));
-typedef void (*AISupportLoginResultCallBack)(AIHelpLoginStatus code, const char *message);
+typedef void (*AISupportAsyncEventListener)(const char *jsonEventData, void (*acknowledge)(const char *jsonAckData));
 
 #pragma mark - ECServiceUserConfig
 

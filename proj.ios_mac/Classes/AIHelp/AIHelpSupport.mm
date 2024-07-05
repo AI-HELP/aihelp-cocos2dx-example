@@ -170,13 +170,12 @@ void AIHelpSupport::additionalSupportFor(PublishCountryOrRegion countryOrRegion)
     [AIHelpSupportSDK additionalSupportFor:tmpCountryOrRegion];
 }
 
-
 namespace {
     // Define a map to store event listeners
     std::unordered_map<AIHelp::EventType, AIHelp::OnAsyncEventListener> g_eventListeners;
     std::unordered_map<AIHelp::EventType, void (*)(const char *)> g_eventCompletions;
 
-    void acknowledge(AIHelp::EventType eventType, const char *jsonAckData) {
+    void adapterAcknowledge(AIHelp::EventType eventType, const char *jsonAckData) {
         auto it = g_eventCompletions.find(eventType);
         if (it != g_eventCompletions.end()) {
             // Call the completion function associated with the event type
@@ -185,33 +184,33 @@ namespace {
     }
 
     // Adapter function
-    void adapterCallback(const char *aihelpMessage, void (*completion)(const char *message)) {
-        std::string eventType = extractValue(aihelpMessage, "eventType");
+    void adapterCallback(const char *jsonEventData, void (*acknowledge)(const char *jsonAckData)) {
+        std::string eventType = extractValue(jsonEventData, "eventType");
         int eventTypeInt = std::stoi(eventType);
         AIHelp::EventType e = static_cast<AIHelp::EventType>(eventTypeInt);
         auto it = g_eventListeners.find(e);
         if (it != g_eventListeners.end()) {
             // Store the completion callback
-            g_eventCompletions[e] = completion;
+            g_eventCompletions[e] = acknowledge;
             // Call the stored listener with acknowledge function
-            it->second(aihelpMessage, acknowledge);
+            it->second(jsonEventData, adapterAcknowledge);
         }
     }
 }
 
 void AIHelpSupport::registerAsyncEventListener(EventType eventType, OnAsyncEventListener listener) {
-    AIHelpEventype aiHelpEventType = static_cast<AIHelpEventype>(static_cast<int>(eventType));
+    AIHelpEventType aiHelpEventType = static_cast<AIHelpEventType>(static_cast<int>(eventType));
     g_eventListeners[eventType] = listener;
-    [AIHelpSupportSDK registerEvent:aiHelpEventType listener:adapterCallback];
+    [AIHelpSupportSDK registerAsyncListener:adapterCallback eventType:aiHelpEventType];
 }
 
 void AIHelpSupport::unregisterAsyncEventListener(EventType eventType) {
-    AIHelpEventype aiHelpEventType = static_cast<AIHelpEventype>(static_cast<int>(eventType));
-    [AIHelpSupportSDK unregisterEvent:aiHelpEventType];
+    AIHelpEventType aiHelpEventType = static_cast<AIHelpEventType>(static_cast<int>(eventType));
+    [AIHelpSupportSDK unregisterAsyncListenerWithEvent:aiHelpEventType];
 }
 
-void AIHelpSupport::startUnreadMessageCountPolling() {
-    [AIHelpSupportSDK startUnreadMessageCountPolling];
+void AIHelpSupport::fetchUnreadMessageCount() {
+    [AIHelpSupportSDK fetchUnreadMessageCount];
 }
 
 void AIHelpSupport::setSDKInterfaceOrientationMask(int interfaceOrientationMask) {

@@ -43,9 +43,7 @@ namespace AIHelp {
 
         static void additionalSupportFor(PublishCountryOrRegion countryOrRegion);
 
-        static void startUnreadMessageCountPolling();
-
-        static void stopUnreadMessageCountPolling();
+        static void fetchUnreadMessageCount();
 
         static void registerAsyncEventListener(EventType eventType, OnAsyncEventListener listener);
 

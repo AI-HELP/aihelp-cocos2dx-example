@@ -27,7 +27,7 @@ public:
 	void updateLanguage(Ref *obj);
 
 	// others
-	void startUnreadMessageCountPolling(Ref *obj);
+	void fetchUnreadMessageCount(Ref *obj);
 	void setPushTokenAndPlatform(Ref *obj);
 	void setUploadLogPath(Ref *obj);
 	void enableLogging(Ref *obj);

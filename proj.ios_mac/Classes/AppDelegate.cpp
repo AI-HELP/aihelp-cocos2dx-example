@@ -81,7 +81,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
             EventType::ENTERPRISE_AUTH,
             [](const char *jsonData, Acknowledge ack) {
                 CCLOG("AIHelp Cocos2dx auth: %s", jsonData);
-                ack(EventType::ENTERPRISE_AUTH, "{\"token\":\"this is your async token\"}");
+                ack(EventType::ENTERPRISE_AUTH, "{\"token\":\"this is your sync token\"}");
             });
 
     AIHelpSupport::registerAsyncEventListener(
@@ -121,6 +121,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
             [](const char *jsonData, Acknowledge ack) {
                 CCLOG("AIHelp Cocos2dx Url: %s", jsonData);
             });
+
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::UNREAD_TASK_COUNT,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx unread task count: %s", jsonData);
+            });
+
 
     return true;
 }

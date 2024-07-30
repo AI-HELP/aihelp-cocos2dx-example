@@ -122,6 +122,12 @@ bool AppDelegate::applicationDidFinishLaunching() {
                 CCLOG("AIHelp Cocos2dx Url: %s", jsonData);
             });
 
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::UNREAD_TASK_COUNT,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx unread task count: %s", jsonData);
+            });
+
     return true;
 }
 

@@ -211,6 +211,7 @@ void GameScene::updateLanguage(cocos2d::Ref *obj) {
 
 void GameScene::fetchUnreadMessageCount(cocos2d::Ref *obj) {
     AIHelpSupport::fetchUnreadMessageCount();
+    AIHelpSupport::fetchUnreadTaskCount();
 }
 
 void GameScene::setPushTokenAndPlatform(cocos2d::Ref *obj) {

@@ -307,6 +307,16 @@ namespace AIHelp {
         }
     }
 
+    void AIHelpSupport::fetchUnreadTaskCount() {
+        const char *sig = "()V";
+        const char *methodName = "fetchUnreadTaskCount";
+        cocos2d::JniMethodInfo info;
+        if (cocos2d::JniHelper::getStaticMethodInfo(info, supportClazzName, methodName, sig)) {
+            info.env->CallStaticVoidMethod(info.classID, info.methodID);
+            info.env->DeleteLocalRef(info.classID);
+        }
+    }
+
     void AIHelpSupport::registerAsyncEventListener(EventType eventType, OnAsyncEventListener listener) {
         eventMap[eventType] = listener;
         const char *clazzName = "net/aihelp/init/CallbackHelper";

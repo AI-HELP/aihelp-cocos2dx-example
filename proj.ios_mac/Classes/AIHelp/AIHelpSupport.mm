@@ -213,6 +213,10 @@ void AIHelpSupport::fetchUnreadMessageCount() {
     [AIHelpSupportSDK fetchUnreadMessageCount];
 }
 
+void AIHelpSupport::fetchUnreadTaskCount() {
+    [AIHelpSupportSDK fetchUnreadTaskCount];
+}
+
 void AIHelpSupport::setSDKInterfaceOrientationMask(int interfaceOrientationMask) {
     [AIHelpSupportSDK setSDKInterfaceOrientationMask:interfaceOrientationMask];
 }

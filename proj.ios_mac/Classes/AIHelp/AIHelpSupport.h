@@ -45,6 +45,8 @@ namespace AIHelp {
 
         static void fetchUnreadMessageCount();
 
+        static void fetchUnreadTaskCount();
+
         static void registerAsyncEventListener(EventType eventType, OnAsyncEventListener listener);
 
         static void unregisterAsyncEventListener(EventType eventType);

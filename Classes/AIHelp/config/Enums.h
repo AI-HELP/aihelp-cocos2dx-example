@@ -47,6 +47,11 @@ namespace AIHelp {
          */
         URL_CLICK,
 
+        /**
+         * Event for unread task count
+         */
+        UNREAD_TASK_COUNT,
+
     };
 
 } // namespace AIHelp

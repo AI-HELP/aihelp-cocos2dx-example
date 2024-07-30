@@ -189,7 +189,7 @@ void GameScene::updateUserInfo(cocos2d::Ref *obj) {
 
     LoginConfig config = LoginConfigBuilder()
             .setUserId(generateRandomDigitsString())
-//            .setUserConfig(userConfig)
+            .setUserConfig(userConfig)
 //            .setEnterpriseAuth(true)
             .build();
 
@@ -210,7 +210,9 @@ void GameScene::updateLanguage(cocos2d::Ref *obj) {
 // ================================= Others =================================
 
 void GameScene::fetchUnreadMessageCount(cocos2d::Ref *obj) {
+    AIHelpSupport::fetchUnreadTaskCount();
     AIHelpSupport::fetchUnreadMessageCount();
+
 }
 
 void GameScene::setPushTokenAndPlatform(cocos2d::Ref *obj) {

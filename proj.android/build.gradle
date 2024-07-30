@@ -3,7 +3,6 @@
 buildscript {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         mavenCentral {
             url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
@@ -21,7 +20,6 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral {
             url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
         }

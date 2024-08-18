@@ -128,6 +128,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
                 CCLOG("AIHelp Cocos2dx unread task count: %s", jsonData);
             });
 
+    AIHelpSupport::registerAsyncEventListener(
+            EventType::CONVERSATION_START,
+            [](const char *jsonData, Acknowledge ack) {
+                CCLOG("AIHelp Cocos2dx conversation start: %s", jsonData);
+            });
 
     return true;
 }

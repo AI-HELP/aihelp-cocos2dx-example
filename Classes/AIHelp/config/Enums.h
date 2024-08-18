@@ -52,6 +52,11 @@ namespace AIHelp {
          */
         UNREAD_TASK_COUNT,
 
+        /**
+         * Event for conversation start, along with the user's first message
+         */
+        CONVERSATION_START,
+
     };
 
 } // namespace AIHelp
